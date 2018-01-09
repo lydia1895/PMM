@@ -20,11 +20,6 @@ lambda = 2*pi;
 theta = linspace(0,89,10)*pi/180;
 phi = 0*pi/180;
 
-
-%ASR parameters
-eta = 0.9;
-f1 = 0.5;
-n_points=100;
 %{
 lambda = linspace(1400,1500,70);
 theta = 4*pi/180;
@@ -108,9 +103,12 @@ N_FMM = 1;
 [Rsum,Tsum] = ...
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
     h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
-    b_x, b_y, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y, ellipse_parameters,...
-    n_points, eta, f1);
+    b_x, b_y, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y, ellipse_parameters);
 
+PMM_main_function(figure_shape, dispersion, lambda_full, theta_full, phi_full, delta,...
+        h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
+        b_x, b_y, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y, ellipse_parameters,...
+        n_points, eta, f1)
 %{
 derxx = hx\Dx;
 
