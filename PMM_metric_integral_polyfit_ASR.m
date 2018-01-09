@@ -25,7 +25,11 @@ dx_dx1_2 = ((d1-w1)/(1-f1))*( 1-eta*cos(2*pi*(x1_2-f1)/(1-f1)) );
     
     dx_dx1_1 = 1 - eta*cos(2*pi*x1_1/w1);
     dx_dx1_2 = 1 - eta*cos(2*pi*(x1_2-w1)/(d1-w1));
-    
+    figure(8)
+    plot (x_1, dx_dx1_1,'m', 'Linewidth', 2)
+    xlabel('x');
+    ylabel('dx_dx1_1');
+    hold off
     
     g_sqrt_1 = dx_dx1_1;  %on the first interval  [0,f1]
     g_sqrt_2 = dx_dx1_2;  %on the second interval [f1,1]
@@ -36,9 +40,9 @@ dx_dx1_2 = ((d1-w1)/(1-f1))*( 1-eta*cos(2*pi*(x1_2-f1)/(1-f1)) );
     g_sqrt_2 = transpose(g_sqrt_2);
     g_sqrt_1_fit = fit(x_1,g_sqrt_1,'poly7')
     g_sqrt_2_fit = fit(x_2,g_sqrt_2,'poly7');
-    g_sqrt_1_fit_num = g_sqrt_1_fit.p8+g_sqrt_1_fit.p7*ksi+g_sqrt_1_fit.p6*ksi.^2+...
-        +g_sqrt_1_fit.p5*ksi.^3+g_sqrt_1_fit.p4*ksi.^4+g_sqrt_1_fit.p3*ksi.^5+...
-        g_sqrt_1_fit.p2*ksi.^6+g_sqrt_1_fit.p1*ksi.^7;
+    g_sqrt_1_fit_num = g_sqrt_1_fit.p8+g_sqrt_1_fit.p7*x_1+g_sqrt_1_fit.p6*x_1.^2+...
+        +g_sqrt_1_fit.p5*x_1.^3+g_sqrt_1_fit.p4*x_1.^4+g_sqrt_1_fit.p3*x_1.^5+...
+        g_sqrt_1_fit.p2*x_1.^6+g_sqrt_1_fit.p1*x_1.^7;
     %{
 g_sqrt_1_fit = polyfit(ksi,g_sqrt_1,5);
 g_sqrt_2_fit = polyfit(ksi,g_sqrt_2,5);
@@ -52,7 +56,7 @@ plot(ksi,g_sqrt_2,'r',ksi,g_sqrt_2_polyval,'g',...
 hold off
         %}
         figure(10)
-        plot(x_1,g_sqrt_1,'r',x_1,g_sqrt_1_fit_num,'b',...
+        plot(x_1,g_sqrt_1, '-sr',x_1,g_sqrt_1_fit_num,'b',...
             x_1,abs(g_sqrt_1-g_sqrt_1_fit_num)./g_sqrt_1, 'm', 'Linewidth', 2)
         xlabel('ksi');
         ylabel('g sqrt 1, g sqrt 1 fit');
@@ -156,7 +160,7 @@ hold off
         eps_total(:,:,2) = eps_xy;
         eps_total(:,:,3) = eps_yx;
         eps_total(:,:,4) = eps_yy;
-        eps_total(:,:,5) = Uxy/eps_zz
+        eps_total(:,:,5) = Uxy/eps_zz;
         
         mu_total(:,:,1) = Uxy/mu_xx_inv;
         mu_total(:,:,2) = mu_xy;
