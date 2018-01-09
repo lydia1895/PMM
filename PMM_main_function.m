@@ -137,7 +137,7 @@ mu_total(:,:,:,nlayer) = mu_total_t;
 if strcmp(figure_shape, 'rectangle')==1
     
 title = 'epsilon for rectangle'
-
+%{
 %usual thing that works
 
 for i=1:L
@@ -147,8 +147,8 @@ for i=1:L
 eps_total(:,:,:,i) = eps_total_t;
 mu_total(:,:,:,i) = mu_total_t;
 end
+%}
 
-%{
 %rectangle + ASR on x coordinate
 
 for i=1:L
@@ -158,7 +158,7 @@ for i=1:L
 eps_total(:,:,:,i) = eps_total_t;
 mu_total(:,:,:,i) = mu_total_t;
 end
-%}
+
 end
 title = 'incident integral for P0, Q0'
 
