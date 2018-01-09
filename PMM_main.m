@@ -1,6 +1,11 @@
 clc
 clear all
 
+% Find all windows of type figure, which have an empty FileName attribute.
+allPlots = findall(0, 'Type', 'figure', 'FileName', []);
+% Close.
+delete(allPlots);
+
 %%%%%%%%%conditions
 
 figure_shape = 'rectangle';
@@ -17,7 +22,7 @@ N_basis_y = N_b*ones(N_intervals_y,1);
 %for ellipse here will be matched coordinates
 
 lambda = 2*pi;
-theta = linspace(0,89,15)*pi/180;
+theta = linspace(40.1255,40.1257,2)*pi/180;
 phi = 0*pi/180;
 
 
@@ -33,8 +38,8 @@ phi = 0*pi/180;
 b_x = zeros(N_intervals_x+1);
 b_y = zeros(N_intervals_y+1);
 
-b_x = [0.0 500.0 1000.0];  
-b_y = [0.0 500.0 1000.0];
+b_x = [0.0 300.0 1000.0];  
+b_y = [0.0 300.0 1000.0];
 %b_x = [0 0.25 0.9]*lambda;
 %b_y = [0 0.25 0.9]*lambda;
 
@@ -112,7 +117,7 @@ N_FMM = 1;
     n_points, eta, f1);
 
 figure(1)
-plot(theta*180/pi, Rsum, 'r', theta*180/pi, Tsum, 'g', 'Linewidth', 2);
+plot(theta*180/pi, Rsum, '-sr', theta*180/pi, Tsum, '-sg', 'Linewidth', 2);
 %[NNt, Nt] = size(theta)
 %plot(lambda, transpose(Rsum), 'r', 'Linewidth', 2);
 hold off
