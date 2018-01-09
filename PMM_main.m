@@ -17,12 +17,12 @@ N_basis_y = N_b*ones(N_intervals_y,1);
 %for ellipse here will be matched coordinates
 
 lambda = 2*pi;
-theta = linspace(40,40,1)*pi/180;
+theta = linspace(0,89,15)*pi/180;
 phi = 0*pi/180;
 
 
 %ASR parameters
-eta = 0.9;
+eta = 0.001;
 f1 = 0.5;
 n_points=10;
 %{
@@ -33,8 +33,8 @@ phi = 0*pi/180;
 b_x = zeros(N_intervals_x+1);
 b_y = zeros(N_intervals_y+1);
 
-b_x = [0.0 150.0 1000.0];  
-b_y = [0.0 150.0 1000.0];
+b_x = [0.0 500.0 1000.0];  
+b_y = [0.0 500.0 1000.0];
 %b_x = [0 0.25 0.9]*lambda;
 %b_y = [0 0.25 0.9]*lambda;
 
@@ -60,9 +60,9 @@ epsilon(:,:,3) = [eSi eSi; eSiO2 eSiO2];
 epsilon(:,:,2) = eSiO2*[1.0 1.0; 1.0 1.0];
 epsilon(:,:,1) = eSi*[1.0 1.0; 1.0 1.0]; %lower layer
 %}
-refIndices = [1.0 2.0];
+refIndices = [1.0 1.0];
 epsilon(:,:,2) = [1.0 1.0; 1.0 1.0];  %upper layer - wave comes from this media
-epsilon(:,:,1) = 4.0*[1.0 1.0; 1.0 1.0];  %lower layer
+epsilon(:,:,1) = 1.0*[1.0 1.0; 1.0 1.0];  %lower layer
 
 %epsilon(:,:,1) = [1.0 1.0; 1.0 1.0];
 %epsilon(:,:,2) = [1.0 2.25; 2.25 2.25];

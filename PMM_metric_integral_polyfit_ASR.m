@@ -18,7 +18,7 @@ dx_dx1_2 = ((d1-w1)/(1-f1))*( 1-eta*cos(2*pi*(x1_2-f1)/(1-f1)) );
     x_2 = x1_2 - eta*((d1-w1)/(2*pi))*sin(2*pi*(x1_2-w1)/(d1-w1));
     
     figure(7)
-    plot (x1_1, x_1,'m', 'Linewidth', 2)
+    plot (x_2, x1_2, 'm', 'Linewidth', 2)
     xlabel('x');
     ylabel('x1');
     hold off
@@ -55,6 +55,8 @@ plot(ksi,g_sqrt_2,'r',ksi,g_sqrt_2_polyval,'g',...
     ksi,abs(g_sqrt_2-g_sqrt_2_polyval)./g_sqrt_2, 'm', 'Linewidth', 2)
 hold off
         %}
+        
+        
         figure(10)
         plot(x_1,g_sqrt_1, '-sr',x_1,g_sqrt_1_fit_num,'b',...
             x_1,abs(g_sqrt_1-g_sqrt_1_fit_num)./g_sqrt_1, 'm', 'Linewidth', 2)
