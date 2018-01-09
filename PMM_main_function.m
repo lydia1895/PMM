@@ -8,7 +8,7 @@ function [Rsum,Tsum] =...
         PMM_main_function(figure_shape, dispersion, lambda_full, theta_full, phi_full, delta,...
         h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
         b_x, b_y, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y, ellipse_parameters,...
-        n_points, eta, f1)
+        n_points, eta, f1, verbose)
     
     %%%%%%%%%here starts the program
     
@@ -47,27 +47,29 @@ function [Rsum,Tsum] =...
     %first compute coefficients [a] from boundary conditions
     %continuity and periodicity conditions are handled by sparse [a]
     
-    title = 'enter boundary conditions'
-    
+    if (verbose>5)
+        title = 'enter boundary conditions'
+    end
     ax = PMM_boundary_conditions(La, tau_x, N_intervals_x, N_basis_x, Nx, nx);
     ay = PMM_boundary_conditions(La, tau_y, N_intervals_y, N_basis_y, Ny, ny);
-    
-    title = 'escape boundary conditions'
-    
+    if (verbose>5)
+        title = 'escape boundary conditions'
+    end
     %compute derivative matrices
-    
-    title = 'enter derivatives'
-    
+    if (verbose>5)
+        title = 'enter derivatives'
+    end
     [Dx, hx, P_dPx] = PMM_new_derivatives(La, N_intervals_x, N_basis_x, nx, Nx, ax, b_x1);
     [Dy, hy, P_dPy] = PMM_new_derivatives(La, N_intervals_y, N_basis_y, ny, Ny, ay, b_x2);
-    
-    title = 'escape derivatives'
-    
+    if (verbose>5)
+        title = 'escape derivatives'
+    end
     %%%%%%%%%%%%%%%for ellipse%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     if strcmp (figure_shape,'ellipse')==1
-        
-        title = 'coordinates and derivatives for ellipse'
+        if (verbose>5)
+            title = 'coordinates and derivatives for ellipse'
+        end
         uni=1;
         
         %%%%%%%%%%last right
@@ -78,7 +80,9 @@ function [Rsum,Tsum] =...
     dy_x1_ellipse,dy_x2_ellipse] =...
     ellipse_coordinates_and_derivatives_new(ellipse_parameters,n_points,n_points_ellipse,uni);
             %}
-            title = 'integrals with metric tensor for eps and mu for ellipse'
+            if (verbose>5)
+                title = 'integrals with metric tensor for eps and mu for ellipse'
+            end
             %{
 derivatives written another way
 [g_sqrt, g_down11, g_down22, g_down12] = ellipse_metric(ellipse_parameters,n_points,uni);
@@ -135,9 +139,9 @@ derivatives written another way
     %%%%%%%%%%%%%%%for rectangle%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     if strcmp(figure_shape, 'rectangle')==1
-        
-        title = 'epsilon for rectangle'
-        
+        if (verbose>5)
+            title = 'epsilon for rectangle'
+        end
         %usual thing that works
         %{
         for i=1:L
@@ -160,8 +164,9 @@ derivatives written another way
         end
         
     end
-    title = 'incident integral for P0, Q0'
-    
+    if (verbose>5)
+        title = 'incident integral for P0, Q0'
+    end
     %precise solution
     [int_P1_Q1, int_P1_Q2] = incident_integral(La, b_x1, b_x2, alpha_ref, beta_ref,...
         N_basis_x, N_basis_y, N_intervals_x, N_intervals_y, Nx, Ny, nx, ny);
@@ -169,8 +174,9 @@ derivatives written another way
 [int_P1_Q1, int_P1_Q2] = PMM_inc_coef(La, b_x1, b_x2, alpha_ref, beta_ref,...
     N_basis_x, N_basis_y, N_intervals_x, N_intervals_y, Nx, Ny, nx, ny);
         %}
-        title = 'derive matrix of transition from PMM to FMM'
-        
+        if (verbose>5)
+            title = 'derive matrix of transition from PMM to FMM'
+        end
         N = N_FMM;
         NN = (2*N_FMM+1)*(2*N_FMM+1);
         
@@ -257,7 +263,7 @@ derivatives written another way
                             PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef, Ex0, Ey0, lambda, theta, phi,...
                             N_FMM, h, L, refIndices, alpha_ref, beta_ref,...
                             b_x1, b_x2, N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
-                            Dx, Dy, hx, hy, eps_total, mu_total);
+                            Dx, Dy, hx, hy, eps_total, mu_total,verbose);
                         
                         %title = 'escape eigenvalue solver and S-matrix'
                         
@@ -286,4 +292,6 @@ derivatives written another way
             xlabel('theta')
             ylabel('abs(min(kz0-gamma(i))/kz0)')
             hold off
-            title = 'escape eigenvalue solver and S-matrix'
+            if (verbose>5)
+                title = 'escape eigenvalue solver and S-matrix'
+            end

@@ -38,7 +38,7 @@ dx_dx1_2 = ((d1-w1)/(1-f1))*( 1-eta*cos(2*pi*(x1_2-f1)/(1-f1)) );
     x_2 = transpose(x_2);
     g_sqrt_1 = transpose(g_sqrt_1);
     g_sqrt_2 = transpose(g_sqrt_2);
-    g_sqrt_1_fit = fit(x_1,g_sqrt_1,'poly7')
+    g_sqrt_1_fit = fit(x_1,g_sqrt_1,'poly7');
     g_sqrt_2_fit = fit(x_2,g_sqrt_2,'poly7');
     g_sqrt_1_fit_num = g_sqrt_1_fit.p8+g_sqrt_1_fit.p7*x_1+g_sqrt_1_fit.p6*x_1.^2+...
         +g_sqrt_1_fit.p5*x_1.^3+g_sqrt_1_fit.p4*x_1.^4+g_sqrt_1_fit.p3*x_1.^5+...

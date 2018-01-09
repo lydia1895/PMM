@@ -6,6 +6,7 @@ allPlots = findall(0, 'Type', 'figure', 'FileName', []);
 % Close.
 delete(allPlots);
 
+verbose = 5;
 %%%%%%%%%conditions
 
 figure_shape = 'rectangle';
@@ -38,7 +39,7 @@ phi = 0*pi/180;
 b_x = zeros(N_intervals_x+1);
 b_y = zeros(N_intervals_y+1);
 
-b_x = [0.0 300.0 1000.0];  
+b_x = [0.0 300.0 1000.0];
 b_y = [0.0 300.0 1000.0];
 %b_x = [0 0.25 0.9]*lambda;
 %b_y = [0 0.25 0.9]*lambda;
@@ -61,7 +62,7 @@ eSiO2 = nSiO2^2;
 refIndices = [1.0 nSi];
 epsilon(:,:,5) = [1.0 1.0; 1.0 1.0];  %upper layer - wave comes from this media
 epsilon(:,:,4) = eSiO2*[1.0 1.0; 1.0 1.0];
-epsilon(:,:,3) = [eSi eSi; eSiO2 eSiO2];  
+epsilon(:,:,3) = [eSi eSi; eSiO2 eSiO2];
 epsilon(:,:,2) = eSiO2*[1.0 1.0; 1.0 1.0];
 epsilon(:,:,1) = eSi*[1.0 1.0; 1.0 1.0]; %lower layer
 %}
@@ -76,7 +77,7 @@ epsilon(:,:,1) = 1.0*[1.0 1.0; 1.0 1.0];  %lower layer
 %L is number of layers including half-infinite medias
 %numerate layers from lower one to the upper one
 
-L=2; 
+L=2;
 h(1) = 0.0;  %lower layer
 h(2) = 0.0;
 
@@ -90,7 +91,7 @@ h(1) = 0.0;   %lower layer
 %}
 
 %arbitrary boundary conditions tau
-  
+
 alpha_ref = -sin(pi/6)/periodx;
 beta_ref =  -sin(pi/6)/periody;
 
@@ -114,7 +115,7 @@ N_FMM = 1;
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
     h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
     b_x, b_y, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y, ellipse_parameters,...
-    n_points, eta, f1);
+    n_points, eta, f1, verbose);
 
 figure(1)
 plot(theta*180/pi, Rsum, '-sr', theta*180/pi, Tsum, '-sg', 'Linewidth', 2);
@@ -122,4 +123,4 @@ plot(theta*180/pi, Rsum, '-sr', theta*180/pi, Tsum, '-sg', 'Linewidth', 2);
 %plot(lambda, transpose(Rsum), 'r', 'Linewidth', 2);
 hold off
 
-    
+
