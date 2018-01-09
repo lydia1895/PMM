@@ -266,7 +266,7 @@ derivatives written another way
                             Dx, Dy, hx, hy, eps_total, mu_total,verbose);
                         
                         %title = 'escape eigenvalue solver and S-matrix'
-                        
+                        Wt(:,:,:,j)=W(:,:,L);
                         Rsum(i,j) = sum(eta_R);
                         Tsum(i,j) = sum(eta_T);
                         gzero(j) = gzero_t;
@@ -281,6 +281,9 @@ derivatives written another way
                     end
                 end
             end
+            %delta_W=abs(Wt(:,:,:,1)-Wt(:,:,:,2));
+            %maxdelta_W=max(delta_W(:))
+            
             figure(2)
             theta = theta_full*180/pi;
             plot(theta,gamma00,'r',theta,gamma_num,'g',theta,gzero,'m','Linewidth', 2)

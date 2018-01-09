@@ -148,6 +148,8 @@ Stotal = new_recursion(Stemp, W(:,:,L), K1, pplus(:,:,L), eye(2*NN,2*NN), N);
     d2_1 = zeros(N_total_3,1);
     d2_2 = zeros(N_total_3,1);
     
+    %WL = W(:,:,L);
+    %maxW = max(WL(:))
     N2 = 2*N_total_3;
     MW = [W(1,N2+q01,L), W(1,N2+q02,L); W(N_total_3+2,N2+q01,L), W(N_total_3+2,N2+q02,L)];
     Isigma = [Ex0*int_P1_Q1; Ey0*int_P1_Q2]*exp(-1j*gamma0*sum(h));
