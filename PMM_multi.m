@@ -157,10 +157,10 @@ Stotal = new_recursion(Stemp, W(:,:,L), K1, pplus(:,:,L), eye(2*NN,2*NN), N);
     dlast(q01) = dq(1);
     dlast(q02) = dq(2);
     delta_inc = cat(1,u0_1,u0_2,dlast);
-    
+    delta_max = max(delta_inc)
     
     ud_PMM = Stotal*delta_inc;
-    
+    %ud_PMM_1=max(ud_PMM);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %we have made all calculations in the Gegenbauer basis

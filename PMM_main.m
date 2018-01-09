@@ -7,6 +7,8 @@ allPlots = findall(0, 'Type', 'figure', 'FileName', []);
 delete(allPlots);
 
 verbose = 5;
+
+format long
 %%%%%%%%%conditions
 
 figure_shape = 'rectangle';
