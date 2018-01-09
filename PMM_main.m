@@ -55,7 +55,6 @@ epsilon(:,:,3) = [eSi eSi; eSiO2 eSiO2];
 epsilon(:,:,2) = eSiO2*[1.0 1.0; 1.0 1.0];
 epsilon(:,:,1) = eSi*[1.0 1.0; 1.0 1.0]; %lower layer
 %}
-
 refIndices = [1.0 2.0];
 epsilon(:,:,2) = [1.0 1.0; 1.0 1.0];  %upper layer - wave comes from this media
 epsilon(:,:,1) = 4.0*[1.0 1.0; 1.0 1.0];  %lower layer

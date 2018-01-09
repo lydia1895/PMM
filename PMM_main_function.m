@@ -202,75 +202,76 @@ gamma_num = zeros(Nt,1);
 for i=1:Nl
     for j=1:Nt
         for k=1:Np
- if strcmp (figure_shape,'ellipse')==1 && strcmp (dispersion,'yes')==1            
- for nlayer=1:L  
-     
-[eps_total_t, mu_total_t] =...
-    PMM_epsilon_ellipse_new(N_basis_x,N_basis_y,Nx,nx,Ny,ny,...
-    N_intervals_x,N_intervals_y,La,epsilon(:,nlayer,i),...
-    int_eps_xx,int_eps_xy,int_eps_yx,int_eps_yy,int_eps_inv_zz);    
-eps_total(:,:,:,nlayer) = eps_total_t;
-mu_total(:,:,:,nlayer) = mu_total_t;
-
- end   
- end
-        lambda = lambda_full(i);
-        theta = theta_full(j);
-        phi = phi_full(k);
+            if strcmp (figure_shape,'ellipse')==1 &&...
+                    strcmp (dispersion,'yes')==1
+                for nlayer=1:L
+                    
+                    [eps_total_t, mu_total_t] =...
+                        PMM_epsilon_ellipse_new(N_basis_x,N_basis_y,Nx,nx,Ny,ny,...
+                        N_intervals_x,N_intervals_y,La,epsilon(:,nlayer,i),...
+                        int_eps_xx,int_eps_xy,int_eps_yx,int_eps_yy,int_eps_inv_zz);
+                    eps_total(:,:,:,nlayer) = eps_total_t;
+                    mu_total(:,:,:,nlayer) = mu_total_t;
+                    
+                end
+            end
+            lambda = lambda_full(i);
+            theta = theta_full(j);
+            phi = phi_full(k);
+            
+            k0 = 2*pi/lambda;
+            
+            alpha0 = k0*n1*sin(theta)*cos(phi);
+            beta0  = k0*n1*sin(theta)*sin(phi);
+            gamma0 = k0*n1*cos(theta);
+            
         
-        k0 = 2*pi/lambda;
-   
-        alpha0 = k0*n1*sin(theta)*cos(phi);
-        beta0  = k0*n1*sin(theta)*sin(phi);
-        gamma0 = k0*n1*cos(theta);
-
+            %incident wave
         
-        %incident wave
-        
-        TETM = [0; cos(delta); sin(delta)];
-        TETMmatrix = [sin(theta)*cos(phi) cos(theta)*cos(phi) -sin(phi); ...
+            TETM = [0; cos(delta); sin(delta)];
+            TETMmatrix = [sin(theta)*cos(phi) cos(theta)*cos(phi) -sin(phi); ...
             sin(theta)*sin(phi) cos(theta)*sin(phi) cos(phi);... 
             cos(phi) -sin(theta) 0];
-        E = TETMmatrix*TETM;
-        Ex = E(1);
-        Ey = E(2);
+            E = TETMmatrix*TETM;
+            Ex = E(1);
+            Ey = E(2);
        
-        k1 = k0*n1;        
-        kz1v = gamma0;
-        A1_nul = ( k1^2 - alpha0^2)/(k0*kz1v);
-        B1_nul = ( k1^2 - beta0^2)/(k0*kz1v);
-        C1_nul = alpha0*beta0/(k0*kz1v);
-
-        norm = A1_nul*abs(Ey)^2 + B1_nul*abs(Ex)^2 +...
-           C1_nul*( Ex*conj(Ey)+Ey*conj(Ex) );
+            k1 = k0*n1;
+            kz1v = gamma0;
+            A1_nul = ( k1^2 - alpha0^2)/(k0*kz1v);
+            B1_nul = ( k1^2 - beta0^2)/(k0*kz1v);
+            C1_nul = alpha0*beta0/(k0*kz1v);
             
-        Ex0=Ex/sqrt(norm);
-        Ey0=Ey/sqrt(norm);
-
-        %title = 'enter eigenvalue solver and S-matrix'        
-        
-        [eta_R, eta_T, Stotal, ud_PMM, kz1v, kz2v,...
-   pplus, pminus, derx, eps, M, gamma_total,gamma_d1,...
-   gamma_norm, EH, gamma_sorted, W, u2d0_FMM_t,gzero_t,gzero_norm_t,...
-   gamma0_t,gamma_num_t] =...
-   PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef, Ex0, Ey0, lambda, theta, phi,...
-   N_FMM, h, L, refIndices, alpha_ref, beta_ref,...
-   b_x1, b_x2, N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
-   Dx, Dy, hx, hy, eps_total, mu_total);
-
-        %title = 'escape eigenvalue solver and S-matrix'
-
-        Rsum(i,j) = sum(eta_R);
-        Tsum(i,j) = sum(eta_T);
-        gzero(j) = gzero_t;
-        gzero_norm(j) = gzero_norm_t;
-        gamma00(j)=gamma0_t;
-        gamma_num(j)=gamma_num_t;
-        R00 = eta_R(N_FMM+1+N_FMM*(2*N_FMM+1));
-        T00 = eta_T(N_FMM+1+N_FMM*(2*N_FMM+1));
-        u2d0FMM(:,:,j)=u2d0_FMM_t;
-        %Mzero(:,:) = M(:,:,1)-M(:,:,2);
-        %mzero = max(Mzero(:))
+            norm = A1_nul*abs(Ey)^2 + B1_nul*abs(Ex)^2 +...
+                C1_nul*( Ex*conj(Ey)+Ey*conj(Ex) );
+            
+            Ex0=Ex/sqrt(norm);
+            Ey0=Ey/sqrt(norm);
+            
+            %title = 'enter eigenvalue solver and S-matrix'
+            
+            [eta_R, eta_T, Stotal, ud_PMM, kz1v, kz2v,...
+                pplus, pminus, derx, eps, M, gamma_total,gamma_d1,...
+                gamma_norm, EH, gamma_sorted, W, u2d0_FMM_t,gzero_t,gzero_norm_t,...
+                gamma0_t,gamma_num_t] =...
+                PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef, Ex0, Ey0, lambda, theta, phi,...
+                N_FMM, h, L, refIndices, alpha_ref, beta_ref,...
+                b_x1, b_x2, N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
+                Dx, Dy, hx, hy, eps_total, mu_total);
+            
+            %title = 'escape eigenvalue solver and S-matrix'
+            
+            Rsum(i,j) = sum(eta_R);
+            Tsum(i,j) = sum(eta_T);
+            gzero(j) = gzero_t;
+            gzero_norm(j) = gzero_norm_t;
+            gamma00(j)=gamma0_t;
+            gamma_num(j)=gamma_num_t;
+            R00 = eta_R(N_FMM+1+N_FMM*(2*N_FMM+1));
+            T00 = eta_T(N_FMM+1+N_FMM*(2*N_FMM+1));
+            u2d0FMM(:,:,j)=u2d0_FMM_t;
+            %Mzero(:,:) = M(:,:,1)-M(:,:,2);
+            %mzero = max(Mzero(:))
         end
     end
 end
