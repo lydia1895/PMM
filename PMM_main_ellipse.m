@@ -20,13 +20,14 @@ N_b = 4;
 N_basis_x = N_b*ones(N_intervals_x,1);
 N_basis_y = N_b*ones(N_intervals_y,1);
 lambda = 2*pi;
-theta = linspace(26.5,26.9,50)*pi/180;
+%theta = linspace(26.5,26.9,10)*pi/180;
+theta = linspace(0,26.5,2)*pi/180;
+%theta = linspace(0,89,10)*pi/180;
 phi = 0*pi/180;
 
 %for ASR
 eta=0;
 f1=0;
-
 
 R1 = 1;
 R2 = 1;

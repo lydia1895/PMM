@@ -63,6 +63,7 @@ function [gamma_norm, EH, gamma_sorted, W, pplus, pminus, eps11,...
     M = cat(1, M1, M2, M3, M4)/k0;
     
     [EH, gamma_norm] = eig(M);
+  
     gamma_v = diag(gamma_norm);
     gamma = gamma_norm*k0;
     

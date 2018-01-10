@@ -78,8 +78,8 @@ g_down12_32_raw(:,:) = g_down12(3,2,:,:);
 [g_down12_32_fit] = polyfit_procedure(x1_3,x2_2,g_down12_32_raw);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[Tx, aTx, Ux] = PMM_T_matrices_norm(Nx,nx,N_basis_x,ax,La,N_intervals_x,b_x1);
-[Ty, aTy, Uy] = PMM_T_matrices_norm(Ny,ny,N_basis_y,ay,La,N_intervals_y,b_x2);
+[Tx, aTx, Ux] = PMM_T_matrices_(Nx,nx,N_basis_x,ax,La,N_intervals_x,b_x1);
+[Ty, aTy, Uy] = PMM_T_matrices(Ny,ny,N_basis_y,ay,La,N_intervals_y,b_x2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 N_total_x = sum(N_basis_x);  %total number of basis functions
