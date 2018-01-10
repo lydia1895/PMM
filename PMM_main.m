@@ -25,8 +25,8 @@ N_basis_y = N_b*ones(N_intervals_y,1);
 %for ellipse here will be matched coordinates
 
 lambda = 2*pi;
-theta = linspace(1,2,2)*pi/180;
-%theta = linspace(40.1255,40.1257,2)*pi/180;
+%theta = linspace(1,89,20)*pi/180;
+theta = linspace(40.1255,40.1257,2)*pi/180;
 phi = 0*pi/180;
 
 

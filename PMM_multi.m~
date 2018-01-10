@@ -113,12 +113,7 @@ Stotal = new_recursion(Stemp, W(:,:,L), K1, pplus(:,:,L), eye(2*NN,2*NN), N);
     if (verbose>5)
         title = 'derive incident coefficients'
     end
-    gamma00 = gamma0
-    %size_gammaminus = size(gammaminus)
-    gammaminus_new = sort(gammaminus(:,L));
-    %size_gammaminus_new = size(gammaminus_new(:,L))
-    diff_gamma = sort(abs(gammaminus(:,L)+gamma0))/gamma0;
-    diff_gamma_5 = diff_gamma(1:5)
+    diff_gamma = sort(abs(gammaminus)+gamma0);
     
     min = abs(gammaminus(1,L)+gamma0);
     q01 = 1;
