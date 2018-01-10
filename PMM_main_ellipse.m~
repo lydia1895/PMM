@@ -16,13 +16,13 @@ n_points = 150;
 n_points_ellipse = 100;
 N_intervals_x = 3;
 N_intervals_y = 3;
-N_b = 6;
+N_b = 4;
 N_basis_x = N_b*ones(N_intervals_x,1);
 N_basis_y = N_b*ones(N_intervals_y,1);
 lambda = 2*pi;
 %theta = linspace(26.5,26.9,10)*pi/180;
-%theta = linspace(0,26.85,2)*pi/180;
-theta = linspace(60,65,12)*pi/180;
+theta = linspace(0,26.,2)*pi/180;
+%theta = linspace(0,89,10)*pi/180;
 phi = 0*pi/180;
 
 %for ASR
@@ -57,12 +57,12 @@ periody = b_x2(NNxx2)-b_x2(1);
 %delta is the angle between E and the incidence plane
 %delta = 0 TM, delta = pi/2 TE
 
-delta = pi/2;
+delta = 0;
 
 
-refIndices = [1.0 2.0];
+refIndices = [1.0 1.0];
 epsilon(2,:)=[1.0 1.0];
-epsilon(1,:)=[4.0 4.0];
+epsilon(1,:)=[1.0 1.0];
 %eps=epsilon;
 %eps_out = epsilon(1);
 %eps_in =  epsilon(2);
