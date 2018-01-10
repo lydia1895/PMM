@@ -64,8 +64,8 @@ g_down12_32_raw(:,:) = g_down12(3,2,:,:);
 [g_down12_32_fit] = polyfit_procedure(ksi1,ksi2,g_down12_32_raw);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[Tx, aTx, Ux] = PMM_T_matrices_norm(Nx,nx,N_basis_x,ax,La,N_intervals_x,b_x1);
-[Ty, aTy, Uy] = PMM_T_matrices_norm(Ny,ny,N_basis_y,ay,La,N_intervals_y,b_x2);
+[Tx, aTx, Ux] = PMM_T_matrices(Nx,nx,N_basis_x,ax,La,N_intervals_x,b_x1);
+[Ty, aTy, Uy] = PMM_T_matrices(Ny,ny,N_basis_y,ay,La,N_intervals_y,b_x2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 N_total_x = sum(N_basis_x);  %total number of basis functions
@@ -159,7 +159,7 @@ for k=1:N_intervals_y
     end
 end
 %}
-int_Dz_unity_full=Kr(hx,hy);%eye(N_total_3,N_total_3); for PMM_T_matrices
+int_Dz_unity_full=eye(N_total_3,N_total_3);%Kr(hx,hy); for PMM_T_matrices
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 int_Dx_sqrt_g = zeros(N_intervals_x,N_intervals_y,N_total_3,N_total_3);

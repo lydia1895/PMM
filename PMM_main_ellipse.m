@@ -1,6 +1,13 @@
 clc
 clear all
+% Find all windows of type figure, which have an empty FileName attribute.
+allPlots = findall(0, 'Type', 'figure', 'FileName', []);
+% Close.
+delete(allPlots);
 
+verbose = 5;
+
+format long
 %%%%%%%%%conditions
 
 figure_shape = 'ellipse';
@@ -13,8 +20,13 @@ N_b = 4;
 N_basis_x = N_b*ones(N_intervals_x,1);
 N_basis_y = N_b*ones(N_intervals_y,1);
 lambda = 2*pi;
-theta = linspace(0,89,56)*pi/180;
+theta = linspace(26.5,26.9,50)*pi/180;
 phi = 0*pi/180;
+
+%for ASR
+eta=0;
+f1=0;
+
 
 R1 = 1;
 R2 = 1;
@@ -44,13 +56,13 @@ periody = b_x2(NNxx2)-b_x2(1);
 %delta is the angle between E and the incidence plane
 %delta = 0 TM, delta = pi/2 TE
 
-delta = pi/2;
+delta = 0;
 
 
 refIndices = [1.0 1.0];
 epsilon(2,:)=[1.0 1.0];
 epsilon(1,:)=[1.0 1.0];
-eps=epsilon
+%eps=epsilon;
 %eps_out = epsilon(1);
 %eps_in =  epsilon(2);
 
@@ -87,10 +99,10 @@ N_FMM = 1;
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
     h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
     b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
-    n_points, n_points_ellipse);
+    n_points, eta, f1, verbose);
 
 figure(1)
-plot(theta*180/pi, Rsum, 'r', theta*180/pi, Tsum, 'g', 'Linewidth', 2);
+plot(theta*180/pi, Rsum, '-sr', theta*180/pi, Tsum, '-sg', 'Linewidth', 2);
 xlabel('theta')
 ylabel('R,T')
 %plot(lambda, transpose(Rsum), 'r', 'Linewidth', 2);

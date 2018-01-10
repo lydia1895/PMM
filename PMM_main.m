@@ -31,6 +31,7 @@ phi = 0*pi/180;
 
 
 %ASR parameters
+%eta = 0;
 eta = 0.001;
 f1 = 0.5;
 n_points=10;
