@@ -23,8 +23,8 @@ lamnkSiO2 = MatParam_nk_SiO2_interpExportData;
 lamnkZep = MatParam_nk_Zep520A_interpExportData;
 
 lmin = 600; %in nm
-lmax = 1300;
-lambda = linspace(lmin,lmax,50);
+lmax = 1600;
+lambda = linspace(lmin,lmax,60);
 [Nll, Nl] = size(lambda);
 
 nAu = zeros(Nl,1);
@@ -90,14 +90,26 @@ delta = 0;
 
 refIndices = [nZnSe nSiO2];
 
-L=5;
+L=5; %number of layers
+%epsilon(iL,1,iNl) = eps outside the ellipse
+%epsilon(iL,2,iNl) = eps inside the ellipse
 
-epsilon = zeros(L,2);
-epsilon(5,:) = [epsZnSe epsZnSe];
-epsilon(4,:) = [epsAir epsAir];
-epsilon(3,:) = [epsZep epsZep];
-epsilon(2,:) = [epsZep epsAu];
-epsilon(1,:) = [epsSiO2 epsSiO2];
+epsilon = zeros(L,2,Nl);
+
+epsilon(5,1,:) = epsZnSe;
+epsilon(5,2,:) = epsZnSe;
+
+epsilon(4,1,:) = epsAir;
+epsilon(4,2,:) = epsAir;
+
+epsilon(3,1,:) = epsZep;
+epsilon(3,2,:) = epsZep;
+
+epsilon(2,1,:) = epsZep;
+epsilon(2,2,:) = epsAu;
+
+epsilon(1,1,:) = epsSiO2;
+epsilon(1,2,:) = epsSiO2;
 
 h = zeros(L,1); 
 h(5) = 0.0;

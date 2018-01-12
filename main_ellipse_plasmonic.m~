@@ -38,6 +38,11 @@ nZnSe(i) = lamnkZnSe(num,2) + 1j*lamnkZnSe(num,3);
 nSiO2(i) = lamnkSiO2(num,2) + 1j*lamnkSiO2(num,3);
 nZep(i) = lamnkZep(num,2) + 1j*lamnkZep(num,3);
 end
+epsAu = nAu.^2;
+epsZnSe = nZnSe.^2;
+epsSiO2 = nSiO2.^2;
+epsZep = nZep.^2;
+epsAir = ones(Nl,1);
 %%%%%%%%%conditions
 
 figure_shape = 'ellipse';
@@ -87,18 +92,27 @@ refIndices = [nZnSe nSiO2];
 
 L=5;
 
-epsilon = zeros(L,2);
-epsilon(5,:) = [epsZnSe epsZnSe];
-epsilon(4,:) = [epsAir epsAir];
-epsilon(3,:) = epsAir*ones(1,2);
-epsilon(2,:) = epsSiO2*ones(1,2);
-epsilon(1,:) = epsSi*ones(1,2);
-epsilon(3,2) = epsSi; %ellipses
+epsilon = zeros(L,2,Nl);
+epsilon(5,1,:) = epsZnSe;
+epsilon(5,2,:) = epsZnSe;
+
+epsilon(4,1,:) = epsAir;
+epsilon(4,2,:) = epsAir;
+
+epsilon(3,1,:) = epsZep;
+epsilon(3,2,:) = epsZep;
+
+epsilon(2,2,:) = epsZep
+
+
+epsilon(2,:,:) = [epsZep epsAu];
+epsilon(1,:,:) = [epsSiO2 epsSiO2];
 
 h = zeros(L,1); 
-h(4) = 0.0;
-h(3) = 220;
-h(2) = 2000;
+h(5) = 0.0;
+h(4) = 25;
+h(3) = 180;
+h(2) = 20;
 h(1) = 0.0;
 
 alpha_ref = -sin(pi/6)/periodx;
@@ -112,7 +126,7 @@ tau_y = exp(1j*beta_ref*periody);
 La = 0.5;
 
 N_FMM = 1;
-
+%{
 %calculate reflection and transmission
 [Rsum_ellipses,Tsum_ellipses] = ...
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
@@ -120,26 +134,8 @@ N_FMM = 1;
     b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
     n_points, eta, f1, verbose);
 
-L=3;
-
-epsilon = zeros(L,2);
-epsilon(3,:) = epsAir*ones(1,2);
-epsilon(2,:) = epsSiO2*ones(1,2);
-epsilon(1,:) = epsSi*ones(1,2);
-
-h = zeros(L,1); 
-h(3) = 0.0;
-h(2) = 2000;
-h(1) = 0.0;
-[Rsum_etched,Tsum_etched] = ...
-    PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
-    h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
-    b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
-    n_points, eta, f1, verbose);
-
-T_ref_T0 = Tsum_ellipses./Tsum_etched;
 figure(1)
-plot(lambda, transpose(T_ref_T0), 'r', 'Linewidth', 2);
+plot(lambda, Rsum_ellipses, 'r', 'Linewidth', 2);
 %plot(lambda, transpose(Rsum), 'r', 'Linewidth', 2);
 hold off
-
+%}
