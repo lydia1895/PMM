@@ -24,7 +24,7 @@ lamnkZep = MatParam_nk_Zep520A_interpExportData;
 
 lmin = 600; %in nm
 lmax = 1600;
-lambda = linspace(lmin,lmax,60);
+lambda = linspace(lmin,lmax,4);
 [Nll, Nl] = size(lambda);
 
 nAu = zeros(Nl,1);
@@ -55,7 +55,10 @@ n_points = 150;
 N_basis_x = N_b*ones(N_intervals_x,1);
 N_basis_y = N_b*ones(N_intervals_y,1);
 
-theta = 55*pi/180;
+%theta = 55*pi/180;
+tmin = 0*pi/180;
+tmax = 89*pi/180;
+theta = linspace(tmin,tmax,50);
 phi = 45*pi/180;
 
 R1 = 140/2;
@@ -137,8 +140,24 @@ N_FMM = 1;
     b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
     n_points, eta, f1, verbose);
 
+[l, ll] = size(lambda)
+[t,tt] = size(theta)
+[r,rr] = size(Rsum_ellipses)
+tl = linspace (lmin,lmax,200)/1000;
+tt = linspace(tmin,tmax,200);
+[XI,YI] = meshgrid(tl,tt);
+ZI = griddata(lambda/1000,theta*180/pi,transpose(Rsum_ellipses),XI,YI);
+figure(1);
+pcolor(XI,YI,ZI)
+xlabel('lambda');
+ylabel('theta');
+shading flat
+caxis([0 1])
+hold off
+%{
 figure(1)
 plot(lambda, Rsum_ellipses, 'r', 'Linewidth', 2);
 %plot(lambda, transpose(Rsum), 'r', 'Linewidth', 2);
 hold off
+    %}
 

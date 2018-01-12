@@ -23,8 +23,8 @@ lamnkSiO2 = MatParam_nk_SiO2_interpExportData;
 lamnkZep = MatParam_nk_Zep520A_interpExportData;
 
 lmin = 600; %in nm
-lmax = 1300;
-lambda = linspace(lmin,lmax,50);
+lmax = 1600;
+lambda = linspace(lmin,lmax,4);
 [Nll, Nl] = size(lambda);
 
 nAu = zeros(Nl,1);
@@ -55,7 +55,10 @@ n_points = 150;
 N_basis_x = N_b*ones(N_intervals_x,1);
 N_basis_y = N_b*ones(N_intervals_y,1);
 
-theta = 55*pi/180;
+%theta = 55*pi/180;
+tmin = 0*pi/180;
+tmax = 89*pi/180;
+theta = linspace(tmin,tmax,50);
 phi = 45*pi/180;
 
 R1 = 140/2;
@@ -90,9 +93,12 @@ delta = 0;
 
 refIndices = [nZnSe nSiO2];
 
-L=5;
+L=5; %number of layers
+%epsilon(iL,1,iNl) = eps outside the ellipse
+%epsilon(iL,2,iNl) = eps inside the ellipse
 
 epsilon = zeros(L,2,Nl);
+
 epsilon(5,1,:) = epsZnSe;
 epsilon(5,2,:) = epsZnSe;
 
@@ -102,11 +108,11 @@ epsilon(4,2,:) = epsAir;
 epsilon(3,1,:) = epsZep;
 epsilon(3,2,:) = epsZep;
 
-epsilon(2,2,:) = epsZep
+epsilon(2,1,:) = epsZep;
+epsilon(2,2,:) = epsAu;
 
-
-epsilon(2,:,:) = [epsZep epsAu];
-epsilon(1,:,:) = [epsSiO2 epsSiO2];
+epsilon(1,1,:) = epsSiO2;
+epsilon(1,2,:) = epsSiO2;
 
 h = zeros(L,1); 
 h(5) = 0.0;
@@ -126,7 +132,7 @@ tau_y = exp(1j*beta_ref*periody);
 La = 0.5;
 
 N_FMM = 1;
-%{
+
 %calculate reflection and transmission
 [Rsum_ellipses,Tsum_ellipses] = ...
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
@@ -134,8 +140,24 @@ N_FMM = 1;
     b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
     n_points, eta, f1, verbose);
 
+[l, ll] = size(lambda)
+[t,tt] = size(theta)
+[r,rr] = size(Rsum_ellipses)
+tl = linspace (lmin,lmax,200)/1000;
+tt = linspace(tmin,tmax,200);
+[XI,YI] = meshgrid(tl,tt);
+ZI = griddata(lambda/1000,theta*180/pi,transpose(Rsum_ellipses),XI,YI);
+figure(1);
+pcolor(XI,YI,ZI)
+xlabel('lambda');
+ylabel('theta');
+shading flat
+caxis([0 1])
+hold off
+%{
 figure(1)
 plot(lambda, Rsum_ellipses, 'r', 'Linewidth', 2);
 %plot(lambda, transpose(Rsum), 'r', 'Linewidth', 2);
 hold off
-%}
+    %}
+
