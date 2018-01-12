@@ -6,7 +6,7 @@ allPlots = findall(0, 'Type', 'figure', 'FileName', []);
 % Close.
 delete(allPlots);
 
-verbose = 6;
+verbose = 8;
 
 format long
 eta=0;
