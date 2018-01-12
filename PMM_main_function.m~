@@ -237,11 +237,13 @@ function [Rsum,Tsum] =...
                         R00 = eta_R(N_FMM+1+N_FMM*(2*N_FMM+1));
                         T00 = eta_T(N_FMM+1+N_FMM*(2*N_FMM+1));
                         u2d0FMM(:,:,j)=u2d0_FMM_t;
-                        
+                        %Mzero(:,:) = M(:,:,1)-M(:,:,2);
+                        %mzero = max(Mzero(:))
                     end
                 end
             end
-            
+            %delta_W=abs(Wt(:,:,:,1)-Wt(:,:,:,2));
+            %maxdelta_W=max(delta_W(:))
             
             figure(2)
             theta = theta_full*180/pi;

@@ -5,7 +5,7 @@ allPlots = findall(0, 'Type', 'figure', 'FileName', []);
 % Close.
 delete(allPlots);
 
-verbose = 5;
+verbose = 7;
 
 format long
 %%%%%%%%%conditions
@@ -22,7 +22,7 @@ N_basis_y = N_b*ones(N_intervals_y,1);
 lambda = 2*pi;
 %theta = linspace(26.5,26.9,10)*pi/180;
 %theta = linspace(0,26.85,2)*pi/180;
-theta = linspace(60,65,12)*pi/180;
+theta = linspace(0,89,15)*pi/180;
 phi = 0*pi/180;
 
 %for ASR
