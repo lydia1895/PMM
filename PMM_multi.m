@@ -123,11 +123,12 @@ Stotal = new_recursion(Stemp, W(:,:,L), K1, pplus(:,:,L), eye(2*NN,2*NN), N);
     q01 = numbers_diff_gamma(1);
     q02 = numbers_diff_gamma(2);
     
-    
+    %{
     diff_gamma_1 = [diff_gamma(1); diff_gamma(1)/gamma0]
     diff_gamma_2 = [diff_gamma(2); diff_gamma(2)/gamma0]
     diff_gamma_3 = [diff_gamma(3); diff_gamma(3)/gamma0]
     diff_gamma_5 = diff_gamma;
+    %}
     %{
     min = abs(gammaminus(1,L)+gamma0);
     q01 = 1;
@@ -151,8 +152,7 @@ Stotal = new_recursion(Stemp, W(:,:,L), K1, pplus(:,:,L), eye(2*NN,2*NN), N);
     end
     gammaminus(q01,L) = gammaminus(q01,L)-100;
     %}
-    q001 = q01;
-    q002 = q02;
+    
     gg1 = gammaminus(q01,L);
     gg2 = gammaminus(q02,L);
     gkz0 = gamma0;
