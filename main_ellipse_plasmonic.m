@@ -6,7 +6,7 @@ allPlots = findall(0, 'Type', 'figure', 'FileName', []);
 % Close.
 delete(allPlots);
 
-verbose = 8;
+verbose = 5;
 
 format long
 eta=0;
@@ -24,7 +24,7 @@ lamnkZep = MatParam_nk_Zep520A_interpExportData;
 
 lmin = 600; %in nm
 lmax = 1600;
-lambda = linspace(lmin,lmax,4);
+lambda = linspace(lmin,lmax,50);
 [Nll, Nl] = size(lambda);
 
 nAu = zeros(Nl,1);
@@ -57,7 +57,7 @@ N_basis_y = N_b*ones(N_intervals_y,1);
 
 %theta = 55*pi/180;
 tmin = 0*pi/180;
-tmax = 89*pi/180;
+tmax = 85*pi/180;
 theta = linspace(tmin,tmax,50);
 phi = 45*pi/180;
 
@@ -146,9 +146,9 @@ N_FMM = 1;
 tl = linspace (lmin,lmax,200)/1000;
 tt = linspace(tmin,tmax,200);
 [XI,YI] = meshgrid(tl,tt);
-ZI = griddata(lambda/1000,theta*180/pi,transpose(Rsum_ellipses),XI,YI);
+ZI = griddata(lambda/1000,theta,transpose(Rsum_ellipses),XI,YI);
 figure(1);
-pcolor(XI,YI,ZI)
+pcolor(XI,YI*180/pi,ZI)
 xlabel('lambda');
 ylabel('theta');
 shading flat
