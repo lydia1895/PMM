@@ -5,7 +5,7 @@ clear all
 allPlots = findall(0, 'Type', 'figure', 'FileName', []);
 % Close.
 delete(allPlots);
-
+%{
 verbose = 8;
 
 format long
@@ -25,7 +25,9 @@ lamnkZep = MatParam_nk_Zep520A_interpExportData;
 %lmin = 667; %in nm
 %lmax = 668;
 lmin = 900;
-lmax = 910;
+lmax = 900;
+%lmin = 600;
+%lmax = 1600;
 lambda = linspace(lmin,lmax,1);
 [Nll, Nl] = size(lambda);
 
@@ -59,9 +61,12 @@ N_basis_y = N_b*ones(N_intervals_y,1);
 
 %theta = 55*pi/180;
 tmin = 55*pi/180;
-tmax = 60*pi/180;
+tmax = 55*pi/180;
 %tmin = 67.4*pi/180;
 %tmax = 67.5*pi/180;
+%tmin = 0*pi/180;
+%tmax = 85*pi/180;
+
 theta = linspace(tmin,tmax,1);
 phi = 45*pi/180;
 
@@ -98,8 +103,8 @@ delta = pi/2;
 refIndices = [nZnSe nSiO2];
 
 L=5; %number of layers
-%epsilon(iL,1,iNl) = eps outside the ellipse
-%epsilon(iL,2,iNl) = eps inside the ellipse
+%epsilon(iL,1,iNlambda) = eps outside the ellipse
+%epsilon(iL,2,iNlambda) = eps inside the ellipse
 
 epsilon = zeros(L,2,Nl);
 
@@ -137,12 +142,30 @@ La = 0.5;
 
 N_FMM = 3;
 
+save('ellipse_plasmonic.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'phi', 'delta',...
+    'h', 'L', 'N_FMM', 'epsilon', 'refIndices', 'La', 'tau_x', 'tau_y',...
+    'alpha_ref', 'beta_ref',...
+    'b_x1', 'b_x2', 'N_basis_x', 'N_basis_y', 'N_intervals_x', 'N_intervals_y',...
+    'ellipse_parameters', 'n_points', 'eta', 'f1', 'verbose')
+%}
+load('ellipse_plasmonic.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'phi', 'delta',...
+    'h', 'L', 'N_FMM', 'epsilon', 'refIndices', 'La', 'tau_x', 'tau_y',...
+    'alpha_ref', 'beta_ref',...
+    'b_x1', 'b_x2', 'N_basis_x', 'N_basis_y', 'N_intervals_x', 'N_intervals_y',...
+    'ellipse_parameters',...
+    'n_points', 'eta', 'f1', 'verbose')
+
 %calculate reflection and transmission
-[Rsum_ellipses,Tsum_ellipses, M] = ...
+[Rsum_ellipses,Tsum_ellipses, M, gammaminus] = ...
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
     h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
     b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
     n_points, eta, f1, verbose);
+for i=1:L
+    gammaminus(:,i)= sort(gammaminus(:,i));
+end
+save('ellipse_plasmonic_output.mat','Rsum_ellipses','Tsum_ellipses',...
+    'M', 'gammaminus');
 %{
 [l, ll] = size(lambda)
 [t,tt] = size(theta)
