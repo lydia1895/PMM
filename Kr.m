@@ -1,5 +1,7 @@
 function [M1M2] = Kr(M1, M2)
-
+    
+    M1M2 = kron(M1,M2);
+    %{
 [m,n] = size(M1);
 [p,q] = size(M2);
 
@@ -16,3 +18,4 @@ for s = 1:n
     end
 end
 end
+    %}

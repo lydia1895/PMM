@@ -6,7 +6,7 @@ allPlots = findall(0, 'Type', 'figure', 'FileName', []);
 % Close.
 delete(allPlots);
 
-verbose = 5;
+verbose = 8;
 
 format long
 eta=0;
@@ -22,9 +22,11 @@ lamnkZnSe = MatParam_nk_ZnSe_interpExportData;
 lamnkSiO2 = MatParam_nk_SiO2_interpExportData;
 lamnkZep = MatParam_nk_Zep520A_interpExportData;
 
-lmin = 600; %in nm
-lmax = 1600;
-lambda = linspace(lmin,lmax,50);
+%lmin = 667; %in nm
+%lmax = 668;
+lmin = 900;
+lmax = 910;
+lambda = linspace(lmin,lmax,1);
 [Nll, Nl] = size(lambda);
 
 nAu = zeros(Nl,1);
@@ -56,9 +58,11 @@ N_basis_x = N_b*ones(N_intervals_x,1);
 N_basis_y = N_b*ones(N_intervals_y,1);
 
 %theta = 55*pi/180;
-tmin = 0*pi/180;
-tmax = 85*pi/180;
-theta = linspace(tmin,tmax,50);
+tmin = 55*pi/180;
+tmax = 60*pi/180;
+%tmin = 67.4*pi/180;
+%tmax = 67.5*pi/180;
+theta = linspace(tmin,tmax,1);
 phi = 45*pi/180;
 
 R1 = 140/2;
@@ -89,7 +93,7 @@ periody = b_x2(NNxx2)-b_x2(1);
 %delta is the angle between E and the incidence plane
 %delta = 0 TM, delta = pi/2 TE
 
-delta = 0;
+delta = pi/2;
 
 refIndices = [nZnSe nSiO2];
 
@@ -131,29 +135,42 @@ tau_y = exp(1j*beta_ref*periody);
 
 La = 0.5;
 
-N_FMM = 1;
+N_FMM = 3;
 
 %calculate reflection and transmission
-[Rsum_ellipses,Tsum_ellipses] = ...
+[Rsum_ellipses,Tsum_ellipses, M] = ...
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
     h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
     b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
     n_points, eta, f1, verbose);
-
+%{
 [l, ll] = size(lambda)
 [t,tt] = size(theta)
 [r,rr] = size(Rsum_ellipses)
-tl = linspace (lmin,lmax,200)/1000;
-tt = linspace(tmin,tmax,200);
+n_lambda_theta = 100;
+tl = linspace (lmin,lmax,n_lambda_theta)/1000;
+tt = linspace(tmin,tmax,n_lambda_theta);
 [XI,YI] = meshgrid(tl,tt);
 ZI = griddata(lambda/1000,theta,transpose(Rsum_ellipses),XI,YI);
 figure(1);
 pcolor(XI,YI*180/pi,ZI)
-xlabel('lambda');
+
+xlabel('lambda for R');
 ylabel('theta');
 shading flat
 caxis([0 1])
+colorbar
+
+figure(4);
+pcolor(lambda/1000,theta*180/pi,transpose(Rsum_ellipses))
+
+xlabel('lambda for R');
+ylabel('theta');
+shading flat
+caxis([0 1])
+colorbar
 hold off
+    %}
 %{
 figure(1)
 plot(lambda, Rsum_ellipses, 'r', 'Linewidth', 2);

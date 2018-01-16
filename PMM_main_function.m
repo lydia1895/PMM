@@ -1,5 +1,5 @@
 
-function [Rsum,Tsum] =...
+function [Rsum,Tsum, M] =...
         PMM_main_function(figure_shape, dispersion, lambda_full, theta_full, phi_full, delta,...
         h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
         b_x, b_y, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y, ellipse_parameters,...
@@ -162,8 +162,8 @@ function [Rsum,Tsum] =...
             Tsum = zeros(Nlambda, Ntheta);
             MM = zeros(4*N_total_3,4*N_total_3,Nlambda);
             u2d0FMM=zeros(NN,4,Ntheta);
-            gzero = zeros(Ntheta,1);
-            gzero_norm = zeros(Ntheta,1);
+            gzero = zeros(Nlambda,Ntheta);
+            gzero_norm = zeros(Nlambda,Ntheta);
             gamma0 = zeros(Ntheta,1);
             gamma_num = zeros(Ntheta,1);
             
@@ -244,8 +244,8 @@ function [Rsum,Tsum] =...
                         Wt(:,:,:,j)=W(:,:,L);
                         Rsum(i,j) = sum(eta_R);
                         Tsum(i,j) = sum(eta_T);
-                        gzero(j) = gzero_t;
-                        gzero_norm(j) = gzero_norm_t;
+                        gzero(i,j) = gzero_t;
+                        gzero_norm(i,j) = gzero_norm_t;
                         gamma00(j)=gamma0_t;
                         gamma_num(j)=gamma_num_t;
                         R00 = eta_R(N_FMM+1+N_FMM*(2*N_FMM+1));
@@ -256,17 +256,34 @@ function [Rsum,Tsum] =...
                 end
             end
             
-            
+            %{
             figure(2)
             theta = theta_full*180/pi;
             plot(theta,gamma00,'r',theta,gamma_num,'g',theta,gzero,'m','Linewidth', 2)
             ylabel('abs(min(kz0-gamma(i)))')
             xlabel('theta')
             hold off
+            %}
+            %{
             figure(3)
-            plot(theta_full*180/pi,gzero_norm,'b','Linewidth', 2)
-            xlabel('theta')
-            ylabel('abs(min(kz0-gamma(i))/kz0)')
+            pcolor(lambda_full,theta_full*180/pi,transpose(gzero))
+            %pcolor(XI,YI*180/pi,ZI)
+            xlabel('lambda for gzero');
+            ylabel('theta');
+            shading flat
+            colorbar
+            
+            figure(2)
+            pcolor(lambda_full,theta_full*180/pi,transpose(gzero_norm))
+            %pcolor(XI,YI*180/pi,ZI)
+            xlabel('lambda for gzero_norm');
+            ylabel('theta');
+            shading flat
+            colorbar
+%}
+            %plot(theta_full*180/pi,gzero,'b','Linewidth', 2)
+            %xlabel('theta')
+            %ylabel('abs(min(kz0-gamma(i))/kz0)')
             hold off
             if (verbose>5)
                 title = 'escape eigenvalue solver and S-matrix'
