@@ -7,7 +7,7 @@ delete(allPlots);
 
 format long
 %%%%%%%%%conditions
-
+%{
 verbose = 7;
 
 figure_shape = 'ellipse';
@@ -88,15 +88,10 @@ La = 0.5;
 %to get diffraction in certain orders
 
 N_FMM = 1;
+%}
 
-%calculate reflection and transmission
-%{
-[R00, Rsum, T00, Tsum, eta_R, eta_T, gamma_norm, EH, gamma_sorted, W, Stotal,...
-    ud_PMM, kz1v, kz2v, hx, Dx, nx, Nx, M, gamma_d1, u2d0_FMM,...
-    pplus, pminus, derx, P_dPx, P_dPy, eps, gamma_total,eps_total]
- %}
 
-save('ellipse_2medias_normal_incidence.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'phi', 'delta',...
+load('ellipse_2medias_normal_incidence.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'phi', 'delta',...
     'h', 'L', 'N_FMM', 'epsilon', 'refIndices', 'La', 'tau_x', 'tau_y',...
     'alpha_ref', 'beta_ref',...
     'b_x1', 'b_x2', 'N_basis_x', 'N_basis_y', 'N_intervals_x', 'N_intervals_y',...
@@ -118,7 +113,7 @@ load('ellipse_2medias.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'phi
 for i=1:L
     gammaminus(:,i)= sort(gammaminus(:,i));
 end
-save('ellipse_2medias__normal_incidence_output.mat','Rsum','Tsum',...
+save('ellipse_2medias_normal_incidence_output.mat','Rsum','Tsum',...
     'M', 'gammaminus');
 figure(1)
 plot(theta*180/pi, Rsum, '-sr', theta*180/pi, Tsum, '-sg', 'Linewidth', 2);
