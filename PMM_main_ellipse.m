@@ -113,7 +113,29 @@ load('ellipse_2medias.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'phi
     'ellipse_parameters',...
     'n_points', 'eta', 'f1', 'verbose')
 %}
-[Rsum,Tsum,M,gammaminus_1_4] = ...
+    
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%{
+[Rsum,Tsum,M,gammaminus,dq] = ...
+    PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
+    h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
+    b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
+    n_points, eta, f1, verbose);
+save('ellipse_2medias_normal_incidence_output.mat','Rsum','Tsum',...
+    'M', 'gammaminus','dq');
+figure(1)
+plot(theta*180/pi, Rsum, '-sr', theta*180/pi, Tsum, '-sg', 'Linewidth', 2);
+xlabel('theta')
+ylabel('R,T')
+%plot(lambda, transpose(Rsum), 'r', 'Linewidth', 2);
+hold off
+%}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+[Rsum_1_4,Tsum_1_4,M_1_4,gammaminus_1_4,dq_1_4] = ...
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
     h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
     b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
@@ -121,17 +143,24 @@ load('ellipse_2medias.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'phi
 for i=1:L
     gammaminus_1_4(:,i)= sort(gammaminus_1_4(:,i));
 end
-
-load('ellipse_2medias_normal_incidence_output.mat','Rsum','Tsum',...
-    'M', 'gammaminus');
-gamma_should_be_zero = abs(gammaminus_1_4 - gammaminus);
-
 figure(1)
-plot(theta*180/pi, Rsum, '-sr', theta*180/pi, Tsum, '-sg', 'Linewidth', 2);
+plot(theta*180/pi, Rsum_1_4, '-sr', theta*180/pi, Tsum_1_4, '-sg', 'Linewidth', 2);
 xlabel('theta')
 ylabel('R,T')
 %plot(lambda, transpose(Rsum), 'r', 'Linewidth', 2);
 hold off
+load('ellipse_2medias_normal_incidence_output.mat','Rsum','Tsum',...
+    'M', 'gammaminus', 'dq');
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%{
+load('ellipse_2medias_normal_incidence_output.mat','Rsum','Tsum',...
+    'M', 'gammaminus');
+gamma_should_be_zero = abs(gammaminus_1_4 - gammaminus);
+save('ellipse_2medias_gamma_difference','gammaminus','gammaminus_1_4','gamma_should_be_zero');
+%}
+
 %{
 [i11,j11]=find(isnan(g_up11_det))
 [i12,j12]=find(isnan(g_up12_det))

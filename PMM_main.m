@@ -25,7 +25,7 @@ N_basis_y = N_b*ones(N_intervals_y,1);
 %for ellipse here will be matched coordinates
 
 lambda = 2*pi;
-theta = linspace(1,89,20)*pi/180;
+theta = linspace(0,85,15)*pi/180;
 %theta = linspace(40.1255,40.1257,2)*pi/180;  %for eta=0.001, b_x=[0 300 1000]
 phi = 0*pi/180;
 
@@ -57,7 +57,7 @@ periody = b_y(NNyy)-b_y(1);
 %delta is the angle between E and the incidence plane
 %delta = 0 TM, delta = pi/2 TE
 
-delta = pi/2;
+delta = 0;
 %epsilon = zeros(N_intervals_x, N_intervals_y);
 %{
 nSi = 3.48;
