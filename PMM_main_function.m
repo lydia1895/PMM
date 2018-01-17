@@ -257,14 +257,15 @@ function [Rsum,Tsum, M, gammaminus] =...
                 end
             end
             
-            %{
+            
             figure(2)
             theta = theta_full*180/pi;
-            plot(theta,gamma00,'r',theta,gamma_num,'g',theta,gzero,'m','Linewidth', 2)
+            %plot(theta,gamma00,'r',theta,gamma_num,'g',theta,gzero,'m','Linewidth', 2)
+            plot(theta,gamma00,'r',theta,gzero,'m','Linewidth', 2)
             ylabel('abs(min(kz0-gamma(i)))')
             xlabel('theta')
             hold off
-            %}
+            
             %{
             figure(3)
             pcolor(lambda_full,theta_full*180/pi,transpose(gzero))

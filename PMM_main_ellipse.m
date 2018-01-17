@@ -21,7 +21,7 @@ N_basis_y = N_b*ones(N_intervals_y,1);
 lambda = 2*pi;
 %theta = linspace(26.5,26.9,10)*pi/180;
 %theta = linspace(0,26.85,2)*pi/180;
-theta = linspace(0,89,15)*pi/180;
+theta = linspace(0,0,1)*pi/180;
 phi = 0*pi/180;
 
 %for ASR
@@ -118,8 +118,10 @@ load('ellipse_2medias.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'phi
 for i=1:L
     gammaminus(:,i)= sort(gammaminus(:,i));
 end
+%{
 save('ellipse_2medias_output.mat','Rsum','Tsum',...
     'M', 'gammaminus');
+%}
 figure(1)
 plot(theta*180/pi, Rsum, '-sr', theta*180/pi, Tsum, '-sg', 'Linewidth', 2);
 xlabel('theta')
