@@ -119,12 +119,12 @@ function [gamma_norm, EH, gamma_sorted, W, pplus, pminus, eps11,...
             gamma_1_4(i) = -gamma_1_4(i);
         end
     end
-    
+    %{
     g_gamma_1_4 = gamma_1_4/k0;
     nn_plus_1_4 = n_plus_1_4;
     nn_minus_1_4 = n_minus_1_4;   
-    
-    E_1_4 = diag(gamma_1_4)\L_EH*H_1_4;
+    %}
+    E_1_4 = L_EH*H_1_4/diag(gamma_1_4);
     %H_1_4 = diag(gamma_1_4)\L_HE*E_1_4;
     W_up = cat(2,E_1_4,E_1_4);
     W_down = cat(2,H_1_4,-H_1_4);
@@ -134,18 +134,20 @@ function [gamma_norm, EH, gamma_sorted, W, pplus, pminus, eps11,...
     gammaplus = gamma_1_4;
     gammaminus = -gamma_1_4;
     gammafull = diag(cat(1,gammaplus,gammaminus));
-    [ng,nng] = size(gammafull)
+    %[ng,nng] = size(gammafull);
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %test
-    H_1_4_new = diag(gamma_1_4)\L_HE*E_1_4;
+    %{
+    H_1_4_new = L_HE*E_1_4/diag(gamma_1_4);
     diff_H_1_4 = abs(H_1_4-H_1_4_new);
     max_diff_H_1_4 = max(diff_H_1_4(:))
     maxH = max(H_1_4(:))
     maxH_new = max(H_1_4_new(:))
     
-    M_EH_minus_gamma_EH = abs(M*W-gammafull*W);
+    M_EH_minus_gamma_EH = abs(M*W-W*gammafull);
     max_M_EH_minus_gamma_EH = max(M_EH_minus_gamma_EH(:))
+    %}
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     NN = N_total_3;

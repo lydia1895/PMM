@@ -90,7 +90,7 @@ La = 0.5;
 N_FMM = 1;
 %}
 %{
-save('ellipse_2medias.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'phi', 'delta',...
+load('ellipse_2medias.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'phi', 'delta',...
     'h', 'L', 'N_FMM', 'epsilon', 'refIndices', 'La', 'tau_x', 'tau_y',...
     'alpha_ref', 'beta_ref',...
     'b_x1', 'b_x2', 'N_basis_x', 'N_basis_y', 'N_intervals_x', 'N_intervals_y',...
@@ -149,17 +149,12 @@ xlabel('theta')
 ylabel('R,T')
 %plot(lambda, transpose(Rsum), 'r', 'Linewidth', 2);
 hold off
-load('ellipse_2medias_normal_incidence_output.mat','Rsum','Tsum',...
-    'M', 'gammaminus', 'dq');
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-%{
 load('ellipse_2medias_normal_incidence_output.mat','Rsum','Tsum',...
     'M', 'gammaminus');
 gamma_should_be_zero = abs(gammaminus_1_4 - gammaminus);
 save('ellipse_2medias_gamma_difference','gammaminus','gammaminus_1_4','gamma_should_be_zero');
-%}
+
 
 %{
 [i11,j11]=find(isnan(g_up11_det))
