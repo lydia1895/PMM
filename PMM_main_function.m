@@ -260,8 +260,8 @@ function [Rsum,Tsum, M, gammaminus] =...
             
             figure(2)
             theta = theta_full*180/pi;
-            %plot(theta,gamma00,'r',theta,gamma_num,'g',theta,gzero,'m','Linewidth', 2)
-            plot(theta,gamma00,'r',theta,gzero,'m','Linewidth', 2)
+            plot(theta,gamma00,'r',theta,gamma_num,'g',theta,gzero,'m','Linewidth', 2)
+            %plot(theta,gamma00,'r',theta,gzero,'m','Linewidth', 2)
             ylabel('abs(min(kz0-gamma(i)))')
             xlabel('theta')
             hold off
