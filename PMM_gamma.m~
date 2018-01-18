@@ -122,16 +122,16 @@ function [W, pplus, pminus, gammaminus]= ...
     L_full = L_HE*L_EH;
     [H_1_4, gamma_sqr_1_4] = eig(L_full);
     
-    gamma_1_4 = diag(gamma_sqr_1_4.^0.5);
-    %gamma_1_4 = gamma_sqr_1_4^0.5;
+    %gamma_1_4 = diag(gamma_sqr_1_4.^0.5);
+    gamma_1_4 = gamma_sqr_1_4^0.5;
     n_plus_1_4 = 0;
     n_minus_1_4 = 0;
     for i=1:2*N_total_3
-        if real(gamma_1_4(i))+imag(gamma_1_4(i))>0
+        if real(gamma_1_4(i,i))+imag(gamma_1_4(i,i))>0
             n_plus_1_4 = n_plus_1_4+1;
         else
             n_minus_1_4 = n_minus_1_4 + 1;
-            gamma_1_4(i) = -gamma_1_4(i);
+            gamma_1_4(i,i) = -gamma_1_4(i,i);
         end
     end
     %{
@@ -139,7 +139,7 @@ function [W, pplus, pminus, gammaminus]= ...
     nn_plus_1_4 = n_plus_1_4;
     nn_minus_1_4 = n_minus_1_4;   
     %}
-    E_1_4 = L_EH*H_1_4/diag(gamma_1_4);
+    E_1_4 = L_EH*H_1_4/gamma_1_4;
     %H_1_4 = diag(gamma_1_4)\L_HE*E_1_4;
     W_up = cat(2,E_1_4,E_1_4);
     W_down = cat(2,H_1_4,-H_1_4);
@@ -148,6 +148,8 @@ function [W, pplus, pminus, gammaminus]= ...
     
     gammaplus = gamma_1_4;
     gammaminus = -gamma_1_4;
+    gammafull = blk
+    %gammafull = diag(cat(1,gammaplus,gammaminus));
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %test

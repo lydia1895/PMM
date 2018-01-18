@@ -155,10 +155,3 @@ load('ellipse_2medias_normal_incidence_output.mat','Rsum','Tsum',...
 gamma_should_be_zero = abs(gammaminus_1_4 - gammaminus);
 save('ellipse_2medias_gamma_difference','gammaminus','gammaminus_1_4','gamma_should_be_zero');
 %}
-
-%{
-[i11,j11]=find(isnan(g_up11_det))
-[i12,j12]=find(isnan(g_up12_det))
-%[i21,j21]=find(isnan(g_up21_det))
-[i22,j22]=find(isnan(g_up22_det))
-%}

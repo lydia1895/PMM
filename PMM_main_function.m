@@ -152,19 +152,14 @@ function [Rsum,Tsum, M, gammaminus] =...
             %}
             
             
-            
-            
             [Nll,Nlambda] = size(lambda_full);
             [Ntt,Ntheta] = size(theta_full);
             [Npp,Nphi] = size(phi_full);
             
             Rsum = zeros(Nlambda, Ntheta);
             Tsum = zeros(Nlambda, Ntheta);
-            MM = zeros(4*N_total_3,4*N_total_3,Nlambda);
-            u2d0FMM=zeros(NN,4,Ntheta);
             gzero = zeros(Nlambda,Ntheta);
             gzero_norm = zeros(Nlambda,Ntheta);
-            gamma0 = zeros(Ntheta,1);
             gamma_num = zeros(Ntheta,1);
             gammaminus = zeros(2*N_total_3,L);
             
