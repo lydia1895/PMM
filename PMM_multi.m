@@ -48,15 +48,19 @@ x_full = PMM_graph(E_PMM, La, alpha0, beta0, alpha_ref, beta_ref,...
         [L_HE, L_EH]= ...
             PMM_Maxwell_matrix(alpha_ref, beta_ref, k0, alpha0, beta0,...
             N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
-            Dx, Dy, hx, hy, eps_total(:,:,:,i), mu_total(:,:,:,i),verbose);
+            Dx, Dy, hx, hy, eps_total(:,:,:,i), mu_total(:,:,:,i));
+        
+        [H_1_4,gamma_sqr_1_4]= ...
+            PMM_eig_for_Maxwell(L_HE,L_EH);
+        
         [Wt, pplust, pminust, gammaminus_t]= ...
-            PMM_eig_for_Maxwell(L_HE,L_EH,h(i),N_total_3,verbose);
-        
-        
-        gammaminus(:,i) = gammaminus_t;
-        W(:,:,i) = Wt;
-        pplus(:,:,i) = pplust;
-        pminus(:,:,i) = pminust;
+            PMM_E_H_gamma(H_1_4, gamma_sqr_1_4,L_EH,N_total_3,h(i));
+            
+            
+            gammaminus(:,i) = gammaminus_t;
+            W(:,:,i) = Wt;
+            pplus(:,:,i) = pplust;
+            pminus(:,:,i) = pminust;
     end
     
     
@@ -82,29 +86,7 @@ x_full = PMM_graph(E_PMM, La, alpha0, beta0, alpha_ref, beta_ref,...
     
     q01 = numbers_diff_gamma(1);
     q02 = numbers_diff_gamma(2);
-    %{
-    min = abs(gammaminus(1,L)+gamma0);
-    q01 = 1;
-    for q2 = 1:2*N_total_3
-        if abs(gammaminus(q2,L)+gamma0)<min %&&...
-            %(abs(imag(gammaminus(q2,L))/real(gammaminus(q2,L)))<0.001)
-            min = abs(gammaminus(q2,L)+gamma0);
-            q01 = q2;
-        end
-    end
-    gammaminus(q01,L) = gammaminus(q01,L)+100;
     
-    q02 = 1;
-    min = abs(gammaminus(1,L)+gamma0);
-    for q2 = 1:2*N_total_3
-        if abs(gammaminus(q2,L)+gamma0)<min %&& (q2~=q01) %&&...
-            %(abs(imag(gammaminus(q2,L))/real(gammaminus(q2,L)))<0.001)
-            min = abs(gammaminus(q2,L)+gamma0);
-            q02 = q2;
-        end
-    end
-    gammaminus(q01,L) = gammaminus(q01,L)-100;
-    %}
     
     gg1 = gammaminus(q01,L);
     gg2 = gammaminus(q02,L);

@@ -2,7 +2,7 @@
 function [L_HE, L_EH]= ...
         PMM_Maxwell_matrix(alpha_ref, beta_ref, k0, alpha0, beta0,...
         N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
-        Dx, Dy, hx, hy, eps_total, mu_total,verbose)
+        Dx, Dy, hx, hy, eps_total, mu_total)
     
     N_total_x = sum(N_basis_x);
     N_total_y = sum(N_basis_y);
@@ -77,32 +77,6 @@ function [L_HE, L_EH]= ...
     
     [EH, gamma_norm] = eig(M);
     
-    gamma_v = diag(gamma_norm);
-    gamma = gamma_norm*k0;
-    
-    NN = N_total_3;
-    
-    gammaplus = zeros(2*NN,1);
-    gammaminus = zeros(2*NN,1);
-    EHplus = zeros(4*NN,2*NN);
-    EHminus = zeros(4*NN,2*NN);
-    nplus = 0;
-    nminus = 0;
-    
-    for i=1:4*NN
-        
-        if ( real(gamma(i,i))+imag(gamma(i,i)) )>0
-            nplus = nplus + 1;
-            gammaplus(nplus) = gamma(i,i);
-            EHplus(:,nplus) = EH(:,i);
-        else
-            nminus = nminus + 1;
-            gammaminus(nminus) = gamma(i,i);
-            EHminus(:,nminus) = EH(:,i);
-        end
-    end
-    
-    W = cat(2, EHplus, EHminus);
     %}
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
@@ -113,3 +87,5 @@ function [L_HE, L_EH]= ...
     L_HE_up = cat(2,M31,M32);
     L_HE_down = cat(2,M41,M42);
     L_HE = cat(1,L_HE_up,L_HE_down);
+    
+    
