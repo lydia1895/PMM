@@ -123,7 +123,6 @@ function [W, pplus, pminus, gammaminus]= ...
     [H_1_4, gamma_sqr_1_4] = eig(L_full);
     
     gamma_1_4 = diag(gamma_sqr_1_4.^0.5);
-    %gamma_1_4 = gamma_sqr_1_4^0.5;
     n_plus_1_4 = 0;
     n_minus_1_4 = 0;
     for i=1:2*N_total_3
@@ -134,11 +133,7 @@ function [W, pplus, pminus, gammaminus]= ...
             gamma_1_4(i) = -gamma_1_4(i);
         end
     end
-    %{
-    g_gamma_1_4 = gamma_1_4/k0;
-    nn_plus_1_4 = n_plus_1_4;
-    nn_minus_1_4 = n_minus_1_4;   
-    %}
+    
     E_1_4 = L_EH*H_1_4/diag(gamma_1_4);
     %H_1_4 = diag(gamma_1_4)\L_HE*E_1_4;
     W_up = cat(2,E_1_4,E_1_4);
@@ -173,16 +168,7 @@ function [W, pplus, pminus, gammaminus]= ...
     
     pplus = diag(pplusv);
     pminus = diag(pminusv);
-    %{
-    gamma_sorted = cat(1,gammaplus,gammaminus);
-    gamma_sorted = diag(gamma_sorted);
-    gamma_norm = gamma_sorted/k0;
-    
-    
-    gamma_total = zeros(N_total_3,4);
-    gamma_d1 = zeros(N_total_3,1);
-    gamma_u1 = zeros(N_total_3,1);
-    %}
+
     if (verbose>5)
         title = 'escape PMM-gamma'
     end

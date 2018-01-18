@@ -1,11 +1,9 @@
 
-function [W, pplus, pminus, gammaminus]= ...
-        PMM_gamma(alpha_ref, beta_ref, k0, alpha0, beta0, h,...
+function [L_HE, L_EH]= ...
+        PMM_Maxwell_matrix(alpha_ref, beta_ref, k0, alpha0, beta0,...
         N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
         Dx, Dy, hx, hy, eps_total, mu_total,verbose)
-    if (verbose>5)
-        title = 'enter PMM-gamma'
-    end
+    
     N_total_x = sum(N_basis_x);
     N_total_y = sum(N_basis_y);
     
@@ -115,65 +113,3 @@ function [W, pplus, pminus, gammaminus]= ...
     L_HE_up = cat(2,M31,M32);
     L_HE_down = cat(2,M41,M42);
     L_HE = cat(1,L_HE_up,L_HE_down);
-    
-    %L_full = L_EH*L_HE;
-    %[E_1_4, gamma_sqr_1_4] = eig(L_full);
-    
-    L_full = L_HE*L_EH;
-    [H_1_4, gamma_sqr_1_4] = eig(L_full);
-    
-    gamma_1_4 = diag(gamma_sqr_1_4.^0.5);
-    %gamma_1_4 = gamma_sqr_1_4^0.5;
-    n_plus_1_4 = 0;
-    n_minus_1_4 = 0;
-    for i=1:2*N_total_3
-        if real(gamma_1_4(i))+imag(gamma_1_4(i))>0
-            n_plus_1_4 = n_plus_1_4+1;
-        else
-            n_minus_1_4 = n_minus_1_4 + 1;
-            gamma_1_4(i) = -gamma_1_4(i);
-        end
-    end
-    %{
-    g_gamma_1_4 = gamma_1_4/k0;
-    nn_plus_1_4 = n_plus_1_4;
-    nn_minus_1_4 = n_minus_1_4;   
-    %}
-    E_1_4 = L_EH*H_1_4/diag(gamma_1_4);
-    %H_1_4 = diag(gamma_1_4)\L_HE*E_1_4;
-    W_up = cat(2,E_1_4,E_1_4);
-    W_down = cat(2,H_1_4,-H_1_4);
-    W = cat(1,W_up,W_down);
-    EH = W;
-    
-    gammaplus = gamma_1_4;
-    gammaminus = -gamma_1_4;
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %test
-    %{
-    H_1_4_new = L_HE*E_1_4/diag(gamma_1_4);
-    diff_H_1_4 = abs(H_1_4-H_1_4_new);
-    max_diff_H_1_4 = max(diff_H_1_4(:))
-    maxH = max(H_1_4(:))
-    maxH_new = max(H_1_4_new(:))
-    
-    M_EH_minus_gamma_EH = abs(M*W-W*gammafull);
-    max_M_EH_minus_gamma_EH = max(M_EH_minus_gamma_EH(:))
-    %}
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    NN = N_total_3;
-    pplusv = zeros(2*NN,1);
-    pminusv = zeros(2*NN,1);
-    for m=1:(2*NN)
-        pplusv(m) = exp(1i*gammaplus(m)*h);
-        pminusv(m) = exp(-1i*gammaminus(m)*h);
-    end
-    
-    pplus = diag(pplusv);
-    pminus = diag(pminusv);
-
-    if (verbose>5)
-        title = 'escape PMM-gamma'
-    end

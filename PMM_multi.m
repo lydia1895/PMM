@@ -31,22 +31,31 @@ x_full = PMM_graph(E_PMM, La, alpha0, beta0, alpha_ref, beta_ref,...
     
     pplus = zeros(2*N_total_3, 2*N_total_3, L);
     pminus = zeros(2*N_total_3, 2*N_total_3, L);
-
+    
     M = zeros(4*N_total_3, 4*N_total_3,L);
     W = zeros(4*N_total_3, 4*N_total_3, L);
     
     for i=1:L
+        %{
             [Wt, pplust, pminust, gammaminus_t] = ...
             PMM_gamma(alpha_ref, beta_ref, k0, alpha0, beta0, h(i),...
             N_intervals_x, N_intervals_y, N_basis_x, N_basis_y, Dx, Dy, hx, hy,...
             eps_total(:,:,:,i), mu_total(:,:,:,i),verbose);
+        %}
+        [L_HE, L_EH]= ...
+            PMM_Maxwell_matrix(alpha_ref, beta_ref, k0, alpha0, beta0,...
+            N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
+            Dx, Dy, hx, hy, eps_total(:,:,:,i), mu_total(:,:,:,i),verbose);
+        [Wt, pplust, pminust, gammaminus_t]= ...
+            PMM_eig_for_Maxwell(L_HE,L_EH,h(i),N_total_3,verbose);
+        
         
         gammaminus(:,i) = gammaminus_t;
         W(:,:,i) = Wt;
         pplus(:,:,i) = pplust;
         pminus(:,:,i) = pminust;
     end
-
+    
     
     %S-matrix propagation
     
@@ -57,7 +66,7 @@ x_full = PMM_graph(E_PMM, La, alpha0, beta0, alpha_ref, beta_ref,...
         Stemp = Si;
     end
     Stotal = Stemp;
-
+    
     if (verbose>5)
         title = 'derive incident coefficients'
     end
@@ -67,7 +76,7 @@ x_full = PMM_graph(E_PMM, La, alpha0, beta0, alpha_ref, beta_ref,...
     gammaminus_new = sort(gammaminus(:,L));
     %size_gammaminus_new = size(gammaminus_new(:,L))
     [diff_gamma,numbers_diff_gamma] = sort(abs(gammaminus(:,L)+gamma0));
-  
+    
     q01 = numbers_diff_gamma(1);
     q02 = numbers_diff_gamma(2);
     %{
