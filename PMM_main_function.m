@@ -7,28 +7,8 @@ function [Rsum,Tsum, M, gammaminus] =...
     
     %%%%%%%%%here starts the program
     
-    nx = N_basis_x-1;   %because functions are p(0)...p(n(k)) on interval k
-    Nx = zeros(N_intervals_x,1);
-    for k=1:N_intervals_x
-        Nx(k) = -nx(k);
-        for p=1:k
-            Nx(k) = Nx(k)+nx(p);
-        end
-    end
-    
-    ny = N_basis_y-1;
-    Ny = zeros(N_intervals_y,1);
-    for k=1:N_intervals_y
-        Ny(k) = -ny(k);
-        for p=1:k
-            Ny(k) = Ny(k)+ny(p);
-        end
-    end
-    
-    N_total_x = sum(N_basis_x);  %total number of basis functions
-    N_total_y = sum(N_basis_y);  %total number of basis functions
-    N_total_x3 = N_total_x - N_intervals_x;  %number of basis functions in "third" basis
-    N_total_y3 = N_total_y - N_intervals_y;
+    [nx,Nx,N_total_x,N_total_x3] = PMM_number_of_basis_functions(N_intervals_x,N_basis_x);
+    [ny,Ny,N_total_y,N_total_y3] = PMM_number_of_basis_functions(N_intervals_y,N_basis_y);
     N_total_3 = N_total_x3*N_total_y3;
     
     %for now
@@ -54,8 +34,8 @@ function [Rsum,Tsum, M, gammaminus] =...
     if (verbose>5)
         title = 'enter derivatives'
     end
-    [Dx, hx, P_dPx] = PMM_new_derivatives(La, N_intervals_x, N_basis_x, nx, Nx, ax, b_x1);
-    [Dy, hy, P_dPy] = PMM_new_derivatives(La, N_intervals_y, N_basis_y, ny, Ny, ay, b_x2);
+    [Dx, hx] = PMM_new_derivatives(La, N_intervals_x, N_basis_x, nx, Nx, ax, b_x1);
+    [Dy, hy] = PMM_new_derivatives(La, N_intervals_y, N_basis_y, ny, Ny, ay, b_x2);
     if (verbose>5)
         title = 'escape derivatives'
     end
@@ -189,35 +169,8 @@ function [Rsum,Tsum, M, gammaminus] =...
                         theta = theta_full(j)
                         phi = phi_full(k);
                         
-                        k0 = 2*pi/lambda;
-                        
-                        
-                        alpha0 = k0*n1*sin(theta)*cos(phi);
-                        beta0  = k0*n1*sin(theta)*sin(phi);
-                        gamma0 = k0*n1*cos(theta);
-                        
-                        
-                        %incident wave
-                        
-                        TETM = [0; cos(delta); sin(delta)];
-                        TETMmatrix = [sin(theta)*cos(phi) cos(theta)*cos(phi) -sin(phi); ...
-                            sin(theta)*sin(phi) cos(theta)*sin(phi) cos(phi);...
-                            cos(phi) -sin(theta) 0];
-                        E = TETMmatrix*TETM;
-                        Ex = E(1);
-                        Ey = E(2);
-                        
-                        k1 = k0*n1;
-                        kz1v = gamma0;
-                        A1_nul = ( k1^2 - alpha0^2)/(k0*kz1v);
-                        B1_nul = ( k1^2 - beta0^2)/(k0*kz1v);
-                        C1_nul = alpha0*beta0/(k0*kz1v);
-                        
-                        norm = A1_nul*abs(Ey)^2 + B1_nul*abs(Ex)^2 +...
-                            C1_nul*( Ex*conj(Ey)+Ey*conj(Ex) );
-                        
-                        Ex0=Ex/sqrt(norm);
-                        Ey0=Ey/sqrt(norm);
+                        [alpha0,beta0,gamma0,k0,Ex0,Ey0] =...
+                            PMM_incident_wave_vector_and_field(lambda,theta,phi,delta,n1);
                         
                         %title = 'enter eigenvalue solver and S-matrix'
                         
@@ -227,11 +180,16 @@ function [Rsum,Tsum, M, gammaminus] =...
                             rrefIndices = refIndices_lambda;
                         end
                         [eta_R, eta_T, M,...
-                            gzero_t,gzero_norm_t, gamma0_t,gamma_num_t,gammaminus] =...
-                            PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef, Ex0, Ey0, lambda, theta, phi,...
+                            gzero_t,gzero_norm_t,gamma_num_t,gammaminus] =...
+                            PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef,...
+                            Ex0, Ey0, alpha0,beta0,gamma0,k0,...
                             N_FMM, h, L, rrefIndices, alpha_ref, beta_ref,...
                             b_x1, b_x2, N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
                             Dx, Dy, hx, hy, eps_total, mu_total,verbose);
+                        
+                        %we can pack
+                        %alpha_ref,b_x1,N_intervals_x,N_basis_x,Dx,hx into one
+                        %x_object and analogous varibles into y_object
                         
                         %title = 'escape eigenvalue solver and S-matrix'
                         
@@ -239,10 +197,8 @@ function [Rsum,Tsum, M, gammaminus] =...
                         Tsum(i,j) = sum(eta_T);
                         gzero(i,j) = gzero_t;
                         gzero_norm(i,j) = gzero_norm_t;
-                        gamma00(j)=gamma0_t;
+                        gamma00(j)=gamma0;
                         gamma_num(j)=gamma_num_t;
-                        
-                        %u2d0FMM(:,:,j)=u2d0_FMM_t;
                         
                     end
                 end
@@ -274,9 +230,6 @@ function [Rsum,Tsum, M, gammaminus] =...
             shading flat
             colorbar
 %}
-            %plot(theta_full*180/pi,gzero,'b','Linewidth', 2)
-            %xlabel('theta')
-            %ylabel('abs(min(kz0-gamma(i))/kz0)')
             hold off
             if (verbose>5)
                 title = 'escape eigenvalue solver and S-matrix'

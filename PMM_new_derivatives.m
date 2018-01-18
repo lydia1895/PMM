@@ -1,4 +1,4 @@
-function [Dx, hx, P_dP] = PMM_new_derivatives(La, N_intervals, N_basis, n, N, ax, b_x)
+function [Dx, hx] = PMM_new_derivatives(La, N_intervals, N_basis, n, N, ax, b_x)
                                   
 %function to get derivative matrix for one dimension (x or y)
 
