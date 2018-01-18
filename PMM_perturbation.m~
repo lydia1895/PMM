@@ -12,11 +12,6 @@ function [H_perturb, gammasqr_perturb] = ...
     for i=1:2*N_total_3
         for j = 1:2*N_total_3
             if i~=j
-                H_perturb(:,i) = H_perturb(:,i) + H_eig(:,j)*...
-                    H_L_H(j,i)/(gammasqr_eig(i,i)-gammasqr_eig(j,j));
-            end
-        end
-    end
-    
+                H_perturb(:,i) = H_perturb(:,i) + H_L_H(j,i)/(gammasqr_eig(i,i)-gammasqr_eig(j,j))
                 
-                          
+                

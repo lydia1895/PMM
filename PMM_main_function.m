@@ -51,16 +51,16 @@ function [Rsum,Tsum, M, gammaminus] =...
         [dx_x1,dx_x2,dy_x1,dy_x2] =...
             ellipse_coordinates_and_derivatives(ellipse_parameters,n_points,uni);
         
-            if (verbose>5)
-                title = 'integrals with metric tensor for eps and mu for ellipse'
-            end
-            
-            
-            [int_Ez_sqrt_g_full,int_Dz_unity_full,int_Dx_sqrt_g_full,int_Dy_sqrt_g_full,...
-                int_Ex_g_down22_full,int_Ey_g_down12_full,int_Ex_g_down21_full,int_Ey_g_down11_full] =...
-                PMM_metric_integral_polyfit_matrices(N_basis_x,N_basis_y,Nx,nx,Ny,ny,...
-                N_intervals_x,N_intervals_y,n_points,La,ax,ay,hx,hy,dx_x1,dx_x2,dy_x1,dy_x2,uni,b_x1,b_x2);
-            
+        if (verbose>5)
+            title = 'integrals with metric tensor for eps and mu for ellipse'
+        end
+        
+        
+        [int_Ez_sqrt_g_full,int_Dz_unity_full,int_Dx_sqrt_g_full,int_Dy_sqrt_g_full,...
+            int_Ex_g_down22_full,int_Ey_g_down12_full,int_Ex_g_down21_full,int_Ey_g_down11_full] =...
+            PMM_metric_integral_polyfit_matrices(N_basis_x,N_basis_y,Nx,nx,Ny,ny,...
+            N_intervals_x,N_intervals_y,n_points,La,ax,ay,hx,hy,dx_x1,dx_x2,dy_x1,dy_x2,uni,b_x1,b_x2);
+        
     end
     
     if strcmp (figure_shape,'ellipse')==1 && strcmp (dispersion,'no')==1
@@ -91,7 +91,7 @@ function [Rsum,Tsum, M, gammaminus] =...
                 N_intervals_x,N_intervals_y,epsilon(:,:,i));
             eps_total(:,:,:,i) = eps_total_t;
             mu_total(:,:,:,i) = mu_total_t;
-        end    
+        end
         
         %rectangle + ASR on x coordinate
         %{
@@ -132,20 +132,20 @@ function [Rsum,Tsum, M, gammaminus] =...
             %}
             
             
-            [Nll,Nlambda] = size(lambda_full);
-            [Ntt,Ntheta] = size(theta_full);
+            [Nll,Nlambda_perturb] = size(lambda_full);
+            [Ntt,Ntheta_perturb] = size(theta_full);
             [Npp,Nphi] = size(phi_full);
             
-            Rsum = zeros(Nlambda, Ntheta);
-            Tsum = zeros(Nlambda, Ntheta);
-            gzero = zeros(Nlambda,Ntheta);
-            gzero_norm = zeros(Nlambda,Ntheta);
-            gamma_num = zeros(Ntheta,1);
+            Rsum = zeros(Nlambda_perturb, Ntheta_perturb);
+            Tsum = zeros(Nlambda_perturb, Ntheta_perturb);
+            gzero = zeros(Nlambda_perturb,Ntheta_perturb);
+            gzero_norm = zeros(Nlambda_perturb,Ntheta_perturb);
+            gamma_num = zeros(Ntheta_perturb,1);
             gammaminus = zeros(2*N_total_3,L);
             
             n1 = refIndices(1);
-            for i=1:Nlambda
-                for j=1:Ntheta
+            for i=1:Nlambda_perturb
+                for j=1:Ntheta_perturb
                     for k=1:Nphi
                         if strcmp (figure_shape,'ellipse')==1 &&...
                                 strcmp (dispersion,'yes')==1
@@ -179,41 +179,61 @@ function [Rsum,Tsum, M, gammaminus] =...
                         else
                             rrefIndices = refIndices_lambda;
                         end
-                        [eta_R, eta_T, M,...
-                            gzero_t,gzero_norm_t,gamma_num_t,gammaminus] =...
-                            PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef,...
-                            Ex0, Ey0, alpha0,beta0,gamma0,k0,...
-                            N_FMM, h, L, rrefIndices, alpha_ref, beta_ref,...
-                            b_x1, b_x2, N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
-                            Dx, Dy, hx, hy, eps_total, mu_total,verbose);
                         
-                        %we can pack
-                        %alpha_ref,b_x1,N_intervals_x,N_basis_x,Dx,hx into one
-                        %x_object and analogous varibles into y_object
-                        
-                        %title = 'escape eigenvalue solver and S-matrix'
-                        
-                        Rsum(i,j) = sum(eta_R);
-                        Tsum(i,j) = sum(eta_T);
-                        gzero(i,j) = gzero_t;
-                        gzero_norm(i,j) = gzero_norm_t;
-                        gamma00(j)=gamma0;
-                        gamma_num(j)=gamma_num_t;
-                        
+                        [L_HE, L_EH]= ...
+                            PMM_Maxwell_matrix(alpha_ref, beta_ref, k0, alpha0, beta0,...
+                            N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
+                            Dx, Dy, hx, hy, eps_total(:,:,:,i), mu_total(:,:,:,i));
                     end
                 end
             end
             
+            for i=1:N_lambda_eig
+                for j=1:N_theta_eig
+                    [H_1_4,gamma_sqr_1_4]= ...
+                        PMM_eig_for_Maxwell(L_HE,L_EH);
+                end
+            end
             
-            figure(2)
-            theta = theta_full*180/pi;
-            plot(theta,gamma00,'r',theta,gamma_num,'g',theta,gzero,'m','Linewidth', 2)
-            %plot(theta,gamma00,'r',theta,gzero,'m','Linewidth', 2)
-            ylabel('abs(min(kz0-gamma(i)))')
-            xlabel('theta')
-            hold off
+            [H_perturb, gammasqr_perturb] = ...
+                PMM_perturbation(Lfull_eig, H_eig, gammasqr_eig, Lfull_perturb
             
-            %{
+            
+            [eta_R, eta_T, M,...
+                gzero_t,gzero_norm_t,gamma_num_t,gammaminus] =...
+                PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef,...
+                Ex0, Ey0, alpha0,beta0,gamma0,k0,...
+                N_FMM, h, L, rrefIndices, alpha_ref, beta_ref,...
+                b_x1, b_x2, N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
+                Dx, Dy, hx, hy, eps_total, mu_total,verbose);
+            
+            %we can pack
+            %alpha_ref,b_x1,N_intervals_x,N_basis_x,Dx,hx into one
+            %x_object and analogous varibles into y_object
+            
+            %title = 'escape eigenvalue solver and S-matrix'
+            
+            Rsum(i,j) = sum(eta_R);
+            Tsum(i,j) = sum(eta_T);
+            gzero(i,j) = gzero_t;
+            gzero_norm(i,j) = gzero_norm_t;
+            gamma00(j)=gamma0;
+            gamma_num(j)=gamma_num_t;
+            
+end
+end
+end
+
+
+figure(2)
+theta = theta_full*180/pi;
+plot(theta,gamma00,'r',theta,gamma_num,'g',theta,gzero,'m','Linewidth', 2)
+%plot(theta,gamma00,'r',theta,gzero,'m','Linewidth', 2)
+ylabel('abs(min(kz0-gamma(i)))')
+xlabel('theta')
+hold off
+
+%{
             figure(3)
             pcolor(lambda_full,theta_full*180/pi,transpose(gzero))
             %pcolor(XI,YI*180/pi,ZI)
@@ -230,7 +250,7 @@ function [Rsum,Tsum, M, gammaminus] =...
             shading flat
             colorbar
 %}
-            hold off
-            if (verbose>5)
-                title = 'escape eigenvalue solver and S-matrix'
-            end
+hold off
+if (verbose>5)
+    title = 'escape eigenvalue solver and S-matrix'
+end

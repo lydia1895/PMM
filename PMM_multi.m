@@ -12,17 +12,10 @@ function [eta_R, eta_T, M,...
     N_total_x3 = N_total_x - N_intervals_x;  %number of basis functions in "third" basis
     N_total_y3 = N_total_y - N_intervals_y;
     N_total_3 = N_total_x3*N_total_y3;
-    
-    
+  
     n1 = refIndices(1);
     n2 = refIndices(2);
-    
-    %{
-    k0 = 2*pi/lambda;
-    alpha0 = k0*n1*sin(theta)*cos(phi);
-    beta0  = k0*n1*sin(theta)*sin(phi);
-    gamma0 = k0*n1*cos(theta);
-    %}
+
     %title = 'plot things'
     %{
 x_full = PMM_graph(E_PMM, La, alpha0, beta0, alpha_ref, beta_ref,...
@@ -40,6 +33,7 @@ x_full = PMM_graph(E_PMM, La, alpha0, beta0, alpha_ref, beta_ref,...
     
     for i=1:L
         %{
+        working single function
             [Wt, pplust, pminust, gammaminus_t] = ...
             PMM_gamma(alpha_ref, beta_ref, k0, alpha0, beta0, h(i),...
             N_intervals_x, N_intervals_y, N_basis_x, N_basis_y, Dx, Dy, hx, hy,...
@@ -52,7 +46,12 @@ x_full = PMM_graph(E_PMM, La, alpha0, beta0, alpha_ref, beta_ref,...
         
         [H_1_4,gamma_sqr_1_4]= ...
             PMM_eig_for_Maxwell(L_HE,L_EH);
-        
+        %{
+        [H_perturb, gammasqr_perturb] = ...
+        PMM_perturbation(Lfull_eig, H_eig, gammasqr_eig, Lfull_perturb
+        %}
+            
+            
         [Wt, pplust, pminust, gammaminus_t]= ...
             PMM_E_H_gamma(H_1_4, gamma_sqr_1_4,L_EH,N_total_3,h(i));
             
