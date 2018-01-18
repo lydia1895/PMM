@@ -1,5 +1,5 @@
-function [gamma_norm, EH, gamma_sorted, W, pplus, pminus, eps11,...
-        M, M31, gammaminus, gamma_total, gamma_d1, gamma_u1] = ...
+
+function [W, pplus, pminus, gammaminus]= ...
         PMM_gamma(alpha_ref, beta_ref, k0, alpha0, beta0, h,...
         N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
         Dx, Dy, hx, hy, eps_total, mu_total,verbose)
@@ -18,7 +18,6 @@ function [gamma_norm, EH, gamma_sorted, W, pplus, pminus, eps11,...
     dx = hxy\Kronecker_product(1j*(alpha0 - alpha_ref)*hx + Dx, hy);
     dy = hxy\Kronecker_product(hx, 1j*(beta0  - beta_ref)*hy  + Dy);
     
-    mzero = zeros(N_total_3,N_total_3);
     
     eps11 = eps_total(:,:,1);
     eps12 = eps_total(:,:,2);
@@ -34,6 +33,21 @@ function [gamma_norm, EH, gamma_sorted, W, pplus, pminus, eps11,...
     alpha = 1j*dx;
     beta = 1j*dy;
     
+    M13 = k0*mu21 + (1/k0)*alpha*eps_inv33*beta;
+    M14 = k0*mu22 - (1/k0)*alpha*eps_inv33*alpha;
+    
+    M23 = -k0*mu11 + (1/k0)*beta*eps_inv33*beta;
+    M24 = -k0*mu12 - (1/k0)*beta*eps_inv33*alpha;
+    
+    M31 = -k0*eps21 - (1/k0)*alpha*mu_inv33*beta;
+    M32 = -k0*eps22 + (1/k0)*alpha*mu_inv33*alpha;
+    
+    M41 = k0*eps11 - (1/k0)*beta*mu_inv33*beta;
+    M42 = k0*eps12 + (1/k0)*beta*mu_inv33*alpha;
+    
+    %{
+    
+    mzero = zeros(N_total_3,N_total_3);
     
     M11 = mzero;
     M12 = mzero;
@@ -62,7 +76,7 @@ function [gamma_norm, EH, gamma_sorted, W, pplus, pminus, eps11,...
     
     M = cat(1, M1, M2, M3, M4)/k0;
    
-    %{
+    
     [EH, gamma_norm] = eig(M);
     
     gamma_v = diag(gamma_norm);
@@ -134,7 +148,6 @@ function [gamma_norm, EH, gamma_sorted, W, pplus, pminus, eps11,...
     gammaplus = gamma_1_4;
     gammaminus = -gamma_1_4;
     gammafull = diag(cat(1,gammaplus,gammaminus));
-    %[ng,nng] = size(gammafull);
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %test
@@ -160,6 +173,7 @@ function [gamma_norm, EH, gamma_sorted, W, pplus, pminus, eps11,...
     
     pplus = diag(pplusv);
     pminus = diag(pminusv);
+    %{
     gamma_sorted = cat(1,gammaplus,gammaminus);
     gamma_sorted = diag(gamma_sorted);
     gamma_norm = gamma_sorted/k0;
@@ -168,6 +182,7 @@ function [gamma_norm, EH, gamma_sorted, W, pplus, pminus, eps11,...
     gamma_total = zeros(N_total_3,4);
     gamma_d1 = zeros(N_total_3,1);
     gamma_u1 = zeros(N_total_3,1);
+    %}
     if (verbose>5)
         title = 'escape PMM-gamma'
     end

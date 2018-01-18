@@ -1,5 +1,7 @@
-function [eta_R, eta_T, M,...
-        gzero,gzero_norm, gamma0,gamma_num,gammaminus] =...
+function [eta_R, eta_T, Stotal, ud_PMM, kz1v, kz2v,...
+        pplus, pminus, derx, eps, M, gamma_total, gamma_d1,...
+        gamma_norm, EH, gamma_sorted, W, u2d0_FMM,gzero,gzero_norm,...
+        gamma0,gamma_num,gammaminus,dq] =...
         PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef, Ex0, Ey0, lambda, theta, phi,...
         N_FMM, h, L, refIndices, alpha_ref, beta_ref,...
         b_x1, b_x2, N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
@@ -31,22 +33,62 @@ x_full = PMM_graph(E_PMM, La, alpha0, beta0, alpha_ref, beta_ref,...
     
     pplus = zeros(2*N_total_3, 2*N_total_3, L);
     pminus = zeros(2*N_total_3, 2*N_total_3, L);
-
+    
+    eps = zeros(N_total_3, N_total_3,L);
+    derx = zeros(N_total_x3, N_total_x3,L);
     M = zeros(4*N_total_3, 4*N_total_3,L);
+    M31 = zeros(N_total_3, N_total_3,L);
+    
+    gamma_norm =   zeros(4*N_total_3,4*N_total_3,L);
+    gamma_sorted = zeros(4*N_total_3,4*N_total_3,L);
+    EH = zeros(4*N_total_3, 4*N_total_3,L);
     W = zeros(4*N_total_3, 4*N_total_3, L);
+    gamma_total = zeros(N_total_3,4,L);
+    gamma_d1 = zeros(N_total_3,L);
+    gamma_u1 = zeros(N_total_3,L);
     
     for i=1:L
-            [Wt, pplust, pminust, gammaminus_t] = ...
+        %{
+        [gamma_normt, EHt, gamma_sortedt, Wt,  pplust, pminust,...
+            epst, Mt, M31t, gamma_minus_t, gamma_total_t, gamma_d1_t, gamma_u1_t] =...
+        %}
+            [Wt, pplust, pminust, gammaminus_t, Mt] = ...
             PMM_gamma(alpha_ref, beta_ref, k0, alpha0, beta0, h(i),...
             N_intervals_x, N_intervals_y, N_basis_x, N_basis_y, Dx, Dy, hx, hy,...
             eps_total(:,:,:,i), mu_total(:,:,:,i),verbose);
         
         gammaminus(:,i) = gammaminus_t;
+        gamma_norm(:,:,i) = gamma_normt;
+        %EH(:,:,i) = EHt;
+        %gamma_sorted(:,:,i) = gamma_sortedt;
         W(:,:,i) = Wt;
         pplus(:,:,i) = pplust;
         pminus(:,:,i) = pminust;
+        %eps(:,:,i) = epst;
+        M(:,:,i) = Mt;
+        %M31(:,:,i) = M31t;
+        %gamma_total(:,:,i) = gamma_total_t;
+        %gamma_d1(:,i) = gamma_d1_t;
+        %gamma_u1(:,i) = gamma_u1_t;
     end
-
+    
+    %{
+%%%%this is wrong, check out indices for Stotal!!!!!!!!!!!!!!!!!!
+Smin1 = eye(4*NN,4*NN);
+Rudmin1 = zeros(2*NN,2*NN);
+Rud0 = new_recursion_refl_only(Rudmin1, W(:,:,1), W(:,:,2),...
+        eye(2*NN,2*NN), pminus(:,:,1));
+Rudtemp = Rud0;
+if L>1
+    for i=1:(L-1)
+        Rudi = new_recursion_refl_only(Rudtemp, W(:,:,i), W(:,:,i+1),...
+            pplus(:,:,i), pminus(:,:,i+1));
+        Rudtemp = Rudi;
+    end
+end
+Rudtotal = new_recursion_refl_only(Rudtemp, W(:,:,L-1), W(:,:,L),...
+    pplus(:,:,L), eye(2*NN,2*NN));
+    %}
     
     %S-matrix propagation
     
@@ -57,7 +99,20 @@ x_full = PMM_graph(E_PMM, La, alpha0, beta0, alpha_ref, beta_ref,...
         Stemp = Si;
     end
     Stotal = Stemp;
-
+    
+    %{
+%%%%%%%%%%from FMM program - for comparison
+Smin1 = eye(4*NN,4*NN);
+S0 = new_recursion(Smin1, K2, W(:,:,1), eye(2*NN,2*NN), pminus(:,:,1), N);
+Stemp = S0;
+if L>1
+    for i=1:(L-1)
+        Si = new_recursion(Stemp, W(:,:,i), W(:,:,i+1), pplus(:,:,i), pminus(:,:,i+1), N);
+        Stemp = Si;
+    end
+end
+Stotal = new_recursion(Stemp, W(:,:,L), K1, pplus(:,:,L), eye(2*NN,2*NN), N);
+    %}
     if (verbose>5)
         title = 'derive incident coefficients'
     end
@@ -70,6 +125,13 @@ x_full = PMM_graph(E_PMM, La, alpha0, beta0, alpha_ref, beta_ref,...
   
     q01 = numbers_diff_gamma(1);
     q02 = numbers_diff_gamma(2);
+    
+    %{
+    diff_gamma_1 = [diff_gamma(1); diff_gamma(1)/gamma0]
+    diff_gamma_2 = [diff_gamma(2); diff_gamma(2)/gamma0]
+    diff_gamma_3 = [diff_gamma(3); diff_gamma(3)/gamma0]
+    diff_gamma_5 = diff_gamma;
+    %}
     %{
     min = abs(gammaminus(1,L)+gamma0);
     q01 = 1;
@@ -179,6 +241,24 @@ x_full = PMM_graph(E_PMM, La, alpha0, beta0, alpha_ref, beta_ref,...
             C2(m,m) = alpha_v(j)*beta_v(i)/(k0*kz2v(m));
         end
     end
+    
+    mzero = zeros(NN,NN);
+    miden = eye(NN,NN);
+    %{
+K2_1 = cat(2, miden, mzero, miden, mzero);
+K2_2 = cat(2, mzero, miden, mzero, miden);
+K2_3 = cat(2, -C1, -A1, C1, A1);
+%K2_3 = cat(2, -C1, A1, C1, -A1);
+K2_4 = cat(2, B1, C1, -B1, -C1);
+K2 = cat(1, K2_1, K2_2, K2_3, K2_4);   %'2' in Chapter 13, Li
+
+K0_1 = cat(2, miden, mzero, miden, mzero);
+K0_2 = cat(2, mzero, miden, mzero, miden);
+K0_3 = cat(2, -C2, -A2, C2, A2);
+%K0_3 = cat(2, -C2, A2, C2, -A2);
+K0_4 = cat(2, B2, C2, -B2, -C2);
+K0 = cat(1, K0_1, K0_2, K0_3, K0_4);   %'0' in Chapter 13, Li
+    %}
     
     u2_PMM = ud_PMM(1:2*N_total_3);
     d0_PMM = ud_PMM(2*N_total_3+1:4*N_total_3);
