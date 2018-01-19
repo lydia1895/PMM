@@ -94,6 +94,7 @@ function [Rsum,Tsum, M, gammaminus] =...
         end
         
     end
+    
     if (verbose>5)
         title = 'incident integral for P0, Q0'
     end
@@ -124,80 +125,147 @@ function [Rsum,Tsum, M, gammaminus] =...
     gzero_norm = zeros(Nlambda_perturb,Ntheta_perturb);
     gamma_num = zeros(Ntheta_perturb,1);
     gammaminus = zeros(2*N_total_3,L);
-    L_EH = (2*N_total_3,2*N_total_3,L,Nlambda_perturb)
+    L_EH = zeros(2*N_total_3,2*N_total_3,L);
+    L_EH = zeros(2*N_total_3,2*N_total_3,L);
     
     n1 = refIndices(1);
-    for i=1:Nlambda_perturb
-        for j=1:Ntheta_perturb
-            for k=1:Nphi
+    for i_lambda_eig=1:Nlambda_eig
+        for j_theta_eig=1:Ntheta_eig
+            for k_phi_eig=1:Nphi_eig
+                
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%for points where we
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%calculate eig rigorously
+                i_lambda_perturb = (n_lambda_extra_perturb-1)/2 + 0 +...
+                    (i-1)*n_lambda_extra_perturb;
+                j_theta_perturb = j_theta_eig;
+                %%%%%%%%%%%%%%%%%%%%%epsilon we calculate for different lambda
                 if strcmp (figure_shape,'ellipse')==1 &&...
                         strcmp (dispersion,'yes')==1
-                    refIndices_lambda = zeros(1,2);
-                    for nlayer=1:L
-                        
-                        [eps_total_t, mu_total_t] =...
-                            PMM_epsilon_ellipse_matrices(N_basis_x,N_basis_y,Nx,nx,Ny,ny,...
-                            N_intervals_x,N_intervals_y,La,epsilon(nlayer,:,i),...
-                            int_Ez_sqrt_g_full,int_Dz_unity_full,int_Dx_sqrt_g_full,int_Dy_sqrt_g_full,...
-                            int_Ex_g_down22_full,int_Ey_g_down12_full,int_Ex_g_down21_full,int_Ey_g_down11_full);
-                        
-                        eps_total(:,:,:,nlayer) = eps_total_t;
-                        mu_total(:,:,:,nlayer) = mu_total_t;
-                        refIndices_lambda(1) = refIndices(i,1);
-                        refIndices_lambda(2) = refIndices(i,2);
-                        n1 = refIndices_lambda(1);
-                    end
+                    refIndices_lambda = zeros(1,2);       
+                    refIndices_lambda(1) = refIndices(i_lambda_perturb,1);
+                    refIndices_lambda(2) = refIndices(i_lambda_perturb,2);
+                    n1 = refIndices_lambda(1);
                 end
-                lambda = lambda_full(i)
-                theta = theta_full(j)
-                phi = phi_full(k);
-                
-                [alpha0,beta0,gamma0,k0,Ex0,Ey0] =...
-                    PMM_incident_wave_vector_and_field(lambda,theta,phi,delta,n1);
-                
-                %title = 'enter eigenvalue solver and S-matrix'
-                
                 if strcmp (dispersion,'no')==1
                     rrefIndices = refIndices;
                 else
                     rrefIndices = refIndices_lambda;
                 end
+                
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%wave vector and E0 we calculate for different
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%lambda and theta and phi
+                lambda = lambda_full(i_lambda_eig)
+                theta = theta_full(j_theta_eig)
+                phi = phi_full(k_phi_eig);
+                [alpha0,beta0,gamma0,k0,Ex0,Ey0] =...
+                    PMM_incident_wave_vector_and_field(lambda,theta,phi,delta,n1);
+                
+                
+                %%%%%%%%%%%%%%for each layer we calculate matrix and then eig
                 for nlayer=1:L
-                [L_HE(:,:,i), L_EH(:,:,i)]= ...
-                    PMM_Maxwell_matrix(alpha_ref, beta_ref, k0, alpha0, beta0,...
-                    N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
-                    Dx, Dy, hx, hy, eps_total(:,:,:,i), mu_total(:,:,:,i));
-            end
-        end
-    end
-    
-    for i=1:N_lambda_eig
-        for j=1:N_theta_eig
-            
-            [H_1_4,gamma_sqr_1_4]= ...
-                PMM_eig_for_Maxwell(L_HE,L_EH);
-            
-            for i_perturb = -(n_lambda_extra_perturb-1)/2:(n_lambda_extra_perturb-1)/2
-                if i_perturb ~=0
-                    lambda = lambda_eig(i) + i_perturb*d_lambda_perturb;
-                    num_lambda_perturb = (n_lambda_extra_perturb-1)/2 + i_perturb +...
-                        (i-1)*n_lambda_extra_perturb;
+                    
+                    [eps_total, mu_total] =...
+                            PMM_epsilon_ellipse_matrices(N_basis_x,N_basis_y,Nx,nx,Ny,ny,...
+                            N_intervals_x,N_intervals_y,La,epsilon(nlayer,:,i_lambda_perturb),...
+                            int_Ez_sqrt_g_full,int_Dz_unity_full,int_Dx_sqrt_g_full,int_Dy_sqrt_g_full,...
+                            int_Ex_g_down22_full,int_Ey_g_down12_full,...
+                            int_Ex_g_down21_full,int_Ey_g_down11_full);
+                    
+                    [L_HE_eig, L_EH_eig]= ...
+                        PMM_Maxwell_matrix(alpha_ref, beta_ref, k0, alpha0, beta0,...
+                        N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
+                        Dx, Dy, hx, hy, eps_total, mu_total);
+                    
+                    Lfull_eig = L_HE_eig*L_EH_eig;
+                    
+                    [H_eig,gammasqr_eig] = PMM_eig_for_Maxwell(Lfull_eig);
+                    
+                    %%%%%%%%%%%%%here we start perturbation calculation
+                    for i_perturb = -(n_lambda_extra_perturb-1)/2:(n_lambda_extra_perturb-1)/2
+                        if i_perturb ~=0
+                            lambda = lambda_eig(i) + i_perturb*d_lambda_perturb;
+                            i_lambda_perturb = (n_lambda_extra_perturb-1)/2 + i_perturb +...
+                                (i-1)*n_lambda_extra_perturb;
+                            %for now, theta and phi stay the same
+                            theta = theta_full(j_theta_eig)
+                            phi = phi_full(k_phi_eig);
+                            
+                            [alpha0,beta0,gamma0,k0,Ex0,Ey0] =...
+                                PMM_incident_wave_vector_and_field(lambda,theta,phi,delta,n1);
+                            
+                            %%%%%%%%%%%%%we're in the same layer as we were 
+                            %%%%%%%%%%%%%%%%%%%%%epsilon we calculate for different lambda
+                            
+                            
+                            if strcmp (figure_shape,'ellipse')==1 &&...
+                                    strcmp (dispersion,'yes')==1
+                                refIndices_lambda = zeros(1,2);
+                                
+                              
+                                [eps_total_t, mu_total_t] =...
+                                    PMM_epsilon_ellipse_matrices(N_basis_x,N_basis_y,Nx,nx,Ny,ny,...
+                                    N_intervals_x,N_intervals_y,La,epsilon(nlayer,:,i_lambda_perturb),...
+                                    int_Ez_sqrt_g_full,int_Dz_unity_full,...
+                                    int_Dx_sqrt_g_full,int_Dy_sqrt_g_full,...
+                                    int_Ex_g_down22_full,int_Ey_g_down12_full,...
+                                    int_Ex_g_down21_full,int_Ey_g_down11_full);
+                                
+                                eps_total(:,:,:,nlayer) = eps_total_t;
+                                mu_total(:,:,:,nlayer) = mu_total_t;
+                                refIndices_lambda(1) = refIndices(i_lambda_perturb,1);
+                                refIndices_lambda(2) = refIndices(i_lambda_perturb,2);
+                                n1 = refIndices_lambda(1);
+                                
+                            end
+                            if strcmp (dispersion,'no')==1
+                                rrefIndices = refIndices;
+                            else
+                                rrefIndices = refIndices_lambda;
+                            end
+                            
+                            [L_HE_perturb, L_EH_perturb]= ...
+                                PMM_Maxwell_matrix(alpha_ref, beta_ref, k0, alpha0, beta0,...
+                                N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
+                                Dx, Dy, hx, hy, eps_total(:,:,:,nlayer), mu_total(:,:,:,nlayer));
+                            
+                            Lfull_perturb = L_HE_perturb*L_EH_perturb;
+                            
+                            [H_perturb, gammasqr_perturb] = ...
+                                PMM_perturbation(Lfull_eig, H_eig, gammasqr_eig, Lfull_perturb);
+                            
+                            [eta_R, eta_T, M,...
+                                gzero_t,gzero_norm_t,gamma_num_t,gammaminus] =...
+                                PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef,...
+                                Ex0, Ey0, alpha0,beta0,gamma0,k0,...
+                                N_FMM, h, L, rrefIndices, alpha_ref, beta_ref,...
+                                b_x1, b_x2, N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
+                                Dx, Dy, hx, hy, eps_total, mu_total,verbose,...
+                                H_perturb, gammasqr_perturb, L_EH_perturb);
+                            
+                        end
+                        [eta_R, eta_T, M,...
+                            gzero_t,gzero_norm_t,gamma_num_t,gammaminus] =...
+                            PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef,...
+                            Ex0, Ey0, alpha0,beta0,gamma0,k0,...
+                            N_FMM, h, L, rrefIndices, alpha_ref, beta_ref,...
+                            b_x1, b_x2, N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
+                            Dx, Dy, hx, hy, eps_total, mu_total,verbose,...
+                            H_eig, gammasqr_eig, L_EH_eig);
+                        
+                        
+                        Rsum(i_lambda_perturb,j_theta_perurb) = sum(eta_R);
+                        Tsum(i_lambda_perturb,j_theta_perturb) = sum(eta_T);
+                        gzero(i_lambda_perturb,j_theta_perturb) = gzero_t;
+                        gzero_norm(i_perturb,j_theta_perturb) = gzero_norm_t;
+                        gamma00(j_theta_perturb)=gamma0;
+                        gamma_num(j_theta_perturb)=gamma_num_t;
+                    end
                 end
+                
             end
         end
     end
     
-    [H_perturb, gammasqr_perturb] = ...
-        PMM_perturbation(Lfull_eig, H_eig, gammasqr_eig, Lfull_perturb
-    
-    
-    [eta_R, eta_T, M,...
-        gzero_t,gzero_norm_t,gamma_num_t,gammaminus] =...
-        PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef,...
-        Ex0, Ey0, alpha0,beta0,gamma0,k0,...
-        N_FMM, h, L, rrefIndices, alpha_ref, beta_ref,...
-        b_x1, b_x2, N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
-        Dx, Dy, hx, hy, eps_total, mu_total,verbose);
     
     %we can pack
     %alpha_ref,b_x1,N_intervals_x,N_basis_x,Dx,hx into one
@@ -205,12 +273,7 @@ function [Rsum,Tsum, M, gammaminus] =...
     
     %title = 'escape eigenvalue solver and S-matrix'
     
-    Rsum(i,j) = sum(eta_R);
-    Tsum(i,j) = sum(eta_T);
-    gzero(i,j) = gzero_t;
-    gzero_norm(i,j) = gzero_norm_t;
-    gamma00(j)=gamma0;
-    gamma_num(j)=gamma_num_t;
+    
     
 end
 end

@@ -23,7 +23,6 @@ lamnkSiO2 = MatParam_nk_SiO2_interpExportData;
 lamnkZep = MatParam_nk_Zep520A_interpExportData;
 
 Nlambda_eig = 3;
-n_lambda_extra_perturb = 7;
 Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 Ntheta_eig = 3;
 Nphi_eig = 1;
@@ -31,10 +30,8 @@ Nphi_eig = 1;
 lmin = 600;
 lmax = 650;
 
-dlambda_eig = (lmax-lmin)/(Nlambda_eig-1);
-dlambda_perturb = dlambda_eig/n_lambda_extra_perturb;
-
-lambda = linspace(lmin,lmax,Nlambda_perturb);
+dlambda_eig = (lmax-lmin)
+lambda = linspace(lmin,lmax,1);
 [Nll, Nl] = size(lambda);
 
 nAu = zeros(Nl,1);
