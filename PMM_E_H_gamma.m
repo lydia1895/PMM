@@ -1,7 +1,9 @@
 
 function [W, pplus, pminus, gammaminus]= ...
         PMM_E_H_gamma(H_1_4, gamma_sqr_1_4,L_EH,N_total_3,h)
-  
+    
+    
+    
     gamma_1_4 = diag(gamma_sqr_1_4.^0.5);
     n_plus_1_4 = 0;
     n_minus_1_4 = 0;

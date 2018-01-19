@@ -193,6 +193,7 @@ function [Rsum,Tsum, M, gammaminus] =...
                     Lfull_eig(:,:,nlayer) = L_HE_eig(:,:,nlayer)*L_EH_eig(:,:,nlayer);
                     
                     [H_eig(:,:,nlayer),gammasqr_eig(:,:,nlayer)] = PMM_eig_for_Maxwell(Lfull_eig(:,:,nlayer));
+                    
                 end
                 
                 
@@ -249,14 +250,23 @@ function [Rsum,Tsum, M, gammaminus] =...
                         [H_perturb(:,:,nlayer), gammasqr_perturb(:,:,nlayer)] = ...
                             PMM_perturbation(Lfull_eig(:,:,nlayer), H_eig(:,:,nlayer),...
                             gammasqr_eig(:,:,nlayer), Lfull_perturb, N_total_3);
-                        %test
+                        %%%%%%test
+                    title = 'test E_H'
+                    [W, pplus, pminus, gammaminus]= ...
+                        PMM_E_H_gamma(H_perturb(:,:,nlayer), gammasqr_perturb(:,:,nlayer),L_EH_perturb(:,:,nlayer),...
+                        N_total_3,h(nlayer));
+                    %%%%%%
+                        %%%%%%%test
+                        %{
                         if i_perturb == 0
                             H_difference_should_be_zero = abs(H_perturb(:,:,nlayer)-H_eig(:,:,nlayer));
                             H_difference_max = max(H_difference_should_be_zero(:))
                             gamma_difference_should_be_zero = abs(gammasqr_perturb(:,:,nlayer)-gammasqr_eig(:,:,nlayer));
                             gamma_difference_max = max(gamma_difference_should_be_zero(:))
                         end
-                            
+                        %}
+                        %%%%%%%%%
+                        
                     end
                     [eta_R, eta_T, M,...
                         gzero_t,gzero_norm_t,gamma_num_t,gammaminus] =...
@@ -278,17 +288,9 @@ function [Rsum,Tsum, M, gammaminus] =...
         
     end
     
-    
-    
-    
     %we can pack
     %alpha_ref,b_x1,N_intervals_x,N_basis_x,Dx,hx into one
     %x_object and analogous varibles into y_object
-    
-    %title = 'escape eigenvalue solver and S-matrix'
-    
-    
-    
     
     figure(2)
     theta = theta_full*180/pi;
