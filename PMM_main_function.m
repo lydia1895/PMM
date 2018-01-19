@@ -134,6 +134,10 @@ function [Rsum,Tsum, M, gammaminus] =...
     H_eig = zeros(2*N_total_3,2*N_total_3,L);
     gammasqr_eig = zeros(2*N_total_3,2*N_total_3,L);
     
+    H_perturb = zeros(2*N_total_3,2*N_total_3,L);
+    gammasqr_perturb = zeros(2*N_total_3,2*N_total_3,L);
+    L_EH_perturb = zeros(2*N_total_3,2*N_total_3,L);
+    
     n1 = refIndices(1);
     for i_lambda_eig=1:Nlambda_eig
         for j_theta_eig=1:Ntheta_eig
@@ -143,7 +147,7 @@ function [Rsum,Tsum, M, gammaminus] =...
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%calculate eig rigorously
                 i_perturb = 0;
                 i_lambda_perturb = half_n_lambda + 1 + i_perturb +...
-                        (i_lambda_eig-1)*n_lambda_extra_perturb;
+                    (i_lambda_eig-1)*n_lambda_extra_perturb;
                 j_theta_perturb = j_theta_eig;
                 k_phi_perturb= k_phi_eig;
                 %%%%%%%%%%%%%%%%%%%%%refIndices we calculate for different lambda
@@ -198,8 +202,8 @@ function [Rsum,Tsum, M, gammaminus] =...
                 for i_perturb = -half_n_lambda:half_n_lambda
                     %if i_perturb ~=0
                     i_lambda_perturb = half_n_lambda + 1 + i_perturb +...
-                        (i_lambda_eig-1)*n_lambda_extra_perturb;
-                    lambda = lambda_full(i_lambda_perturb);
+                        (i_lambda_eig-1)*n_lambda_extra_perturb
+                    lambda = lambda_full(i_lambda_perturb)
                     %for now, theta and phi stay the same
                     theta = theta_full(j_theta_eig)
                     phi = phi_full(k_phi_eig);
@@ -235,30 +239,36 @@ function [Rsum,Tsum, M, gammaminus] =...
                                 int_Ex_g_down21_full,int_Ey_g_down11_full);
                         end
                         
-                        [L_HE_perturb, L_EH_perturb]= ...
+                        [L_HE_perturb, L_EH_perturb(:,:,nlayer)]= ...
                             PMM_Maxwell_matrix(alpha_ref, beta_ref, k0, alpha0, beta0,...
                             N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
                             Dx, Dy, hx, hy, eps_total, mu_total);
                         
-                        Lfull_perturb = L_HE_perturb*L_EH_perturb;
+                        Lfull_perturb = L_HE_perturb*L_EH_perturb(:,:,nlayer);
                         
-                        [H_perturb, gammasqr_perturb] = ...
+                        [H_perturb(:,:,nlayer), gammasqr_perturb(:,:,nlayer)] = ...
                             PMM_perturbation(Lfull_eig(:,:,nlayer), H_eig(:,:,nlayer),...
-                            gammasqr_eig(:,:,nlayer), Lfull_perturb);
+                            gammasqr_eig(:,:,nlayer), Lfull_perturb, N_total_3);
+                        %test
+                        if i_perturb == 0
+                            H_difference_should_be_zero = abs(H_perturb(:,:,nlayer)-H_eig(:,:,nlayer));
+                            H_difference_max = max(H_difference_should_be_zero(:))
+                            gamma_difference_should_be_zero = abs(gammasqr_perturb(:,:,nlayer)-gammasqr_eig(:,:,nlayer));
+                            gamma_difference_max = max(gamma_difference_should_be_zero(:))
+                        end
+                            
                     end
                     [eta_R, eta_T, M,...
                         gzero_t,gzero_norm_t,gamma_num_t,gammaminus] =...
                         PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef,...
-                        Ex0, Ey0, alpha0,beta0,gamma0,k0,...
-                        N_FMM, h, L, rrefIndices, alpha_ref, beta_ref,...
+                        Ex0, Ey0, alpha0,beta0,gamma0,k0, N_FMM, h, L, rrefIndices,...
                         b_x1, b_x2, N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
-                        Dx, Dy, hx, hy, eps_total, mu_total,verbose,...
-                        H_perturb, gammasqr_perturb, L_EH_perturb);
+                        verbose, H_perturb, gammasqr_perturb, L_EH_perturb);
                     
                     Rsum(i_lambda_perturb,j_theta_perturb) = sum(eta_R);
                     Tsum(i_lambda_perturb,j_theta_perturb) = sum(eta_T);
                     gzero(i_lambda_perturb,j_theta_perturb) = gzero_t;
-                    gzero_norm(i_perturb,j_theta_perturb) = gzero_norm_t;
+                    gzero_norm(i_lambda_perturb,j_theta_perturb) = gzero_norm_t;
                     gamma00(j_theta_perturb)=gamma0;
                     gamma_num(j_theta_perturb)=gamma_num_t;
                 end
@@ -267,28 +277,28 @@ function [Rsum,Tsum, M, gammaminus] =...
         end
         
     end
-
-
-
-
-%we can pack
-%alpha_ref,b_x1,N_intervals_x,N_basis_x,Dx,hx into one
-%x_object and analogous varibles into y_object
-
-%title = 'escape eigenvalue solver and S-matrix'
-
-
-
-
-figure(2)
-theta = theta_full*180/pi;
-plot(theta,gamma00,'r',theta,gamma_num,'g',theta,gzero,'m','Linewidth', 2)
-%plot(theta,gamma00,'r',theta,gzero,'m','Linewidth', 2)
-ylabel('abs(min(kz0-gamma(i)))')
-xlabel('theta')
-hold off
-
-%{
+    
+    
+    
+    
+    %we can pack
+    %alpha_ref,b_x1,N_intervals_x,N_basis_x,Dx,hx into one
+    %x_object and analogous varibles into y_object
+    
+    %title = 'escape eigenvalue solver and S-matrix'
+    
+    
+    
+    
+    figure(2)
+    theta = theta_full*180/pi;
+    plot(theta,gamma00,'r',theta,gamma_num,'g',theta,gzero,'m','Linewidth', 2)
+    %plot(theta,gamma00,'r',theta,gzero,'m','Linewidth', 2)
+    ylabel('abs(min(kz0-gamma(i)))')
+    xlabel('theta')
+    hold off
+    
+    %{
             figure(3)
             pcolor(lambda_full,theta_full*180/pi,transpose(gzero))
             %pcolor(XI,YI*180/pi,ZI)
@@ -304,8 +314,8 @@ hold off
             ylabel('theta');
             shading flat
             colorbar
-%}
-hold off
-if (verbose>5)
-    title = 'escape eigenvalue solver and S-matrix'
-end
+    %}
+    hold off
+    if (verbose>5)
+        title = 'escape eigenvalue solver and S-matrix'
+    end

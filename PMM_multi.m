@@ -15,18 +15,9 @@ function [eta_R, eta_T, M,...
     n1 = refIndices(1);
     n2 = refIndices(2);
 
-    %title = 'plot things'
-    %{
-x_full = PMM_graph(E_PMM, La, alpha0, beta0, alpha_ref, beta_ref,...
-   b_x1, b_x2, N_intervals_x, N_intervals_y, N_basis_x, N_basis_y, Nx, nx, Ny, ny,...
-   ax, ay);
-    %}
-    gammaminus = zeros(2*N_total_3, L);
-    
-    
+    gammaminus = zeros(2*N_total_3, L);    
     pplus = zeros(2*N_total_3, 2*N_total_3, L);
     pminus = zeros(2*N_total_3, 2*N_total_3, L);
-    
     M = zeros(4*N_total_3, 4*N_total_3,L);
     W = zeros(4*N_total_3, 4*N_total_3, L);
     
@@ -35,10 +26,10 @@ x_full = PMM_graph(E_PMM, La, alpha0, beta0, alpha_ref, beta_ref,...
             PMM_E_H_gamma(H_1_4(:,:,nlayer), gamma_sqr_1_4(:,:,nlayer),L_EH(:,:,nlayer),...
             N_total_3,h(nlayer));
 
-            gammaminus(:,i) = gammaminus_t;
-            W(:,:,i) = Wt;
-            pplus(:,:,i) = pplust;
-            pminus(:,:,i) = pminust;
+            gammaminus(:,nlayer) = gammaminus_t;
+            W(:,:,nlayer) = Wt;
+            pplus(:,:,nlayer) = pplust;
+            pminus(:,:,nlayer) = pminust;
     end
     
     
