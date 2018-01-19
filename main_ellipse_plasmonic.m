@@ -28,11 +28,12 @@ Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 Ntheta_eig = 3;
 Nphi_eig = 1;
 
-lmin = 600;
-lmax = 650;
+lmin = 900;
+lmax = 920;
 
 dlambda_eig = (lmax-lmin)/(Nlambda_eig-1);
-dlambda_perturb = dlambda_eig/n_lambda_extra_perturb;
+dlambda_perturb = dlambda_eig/n_lambda_extra_perturb; 
+
 
 lambda = linspace(lmin,lmax,Nlambda_perturb);
 [Nll, Nl] = size(lambda);
