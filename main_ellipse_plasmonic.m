@@ -25,19 +25,46 @@ lamnkZep = MatParam_nk_Zep520A_interpExportData;
 Nlambda_eig = 3;
 n_lambda_extra_perturb = 7;
 Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
+half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
+
 Ntheta_eig = 3;
+n_theta_extra_perturb = 1;
+Ntheta_perturb = n_theta_extra_perturb * Ntheta_eig;
+half_n_theta = floor((n_theta_extra_perturb-1)/2);
+
 Nphi_eig = 1;
+n_phi_extra_perturb = 1;
+Nphi_perturb = n_phi_extra_perturb * Nphi_eig;
+half_n_phi = floor((n_phi_extra_perturb-1)/2);
 
 lmin = 900;
 lmax = 920;
 
 dlambda_eig = (lmax-lmin)/(Nlambda_eig-1);
-dlambda_perturb = dlambda_eig/n_lambda_extra_perturb; 
-
+dlambda_perturb = dlambda_eig/n_lambda_extra_perturb;
 
 lambda = linspace(lmin,lmax,Nlambda_perturb);
-[Nll, Nl] = size(lambda);
 
+
+tmin = 55*pi/180;
+tmax = 60*pi/180;
+
+theta = linspace(tmin,tmax,Ntheta_eig);
+phi = 45*pi/180;
+
+%{
+%test
+lambda_current = zeros(1,Nlambda_perturb);
+for i =1:Nlambda_eig
+    for i_perturb = -half_n_lambda:half_n_lambda
+        i_lambda_perturb = 1 + half_n_lambda + i_perturb +...
+            (i-1)*n_lambda_extra_perturb;
+        lambda_current(i_lambda_perturb) = lambda(i_lambda_perturb);
+    end
+end
+%}
+
+Nl = Nlambda_perturb;
 nAu = zeros(Nl,1);
 nZnSe = zeros(Nl,1);
 nSiO2 = zeros(Nl,1);
@@ -66,16 +93,7 @@ n_points = 150;
 N_basis_x = N_b*ones(N_intervals_x,1);
 N_basis_y = N_b*ones(N_intervals_y,1);
 
-%theta = 55*pi/180;
-tmin = 55*pi/180;
-tmax = 55*pi/180;
-%tmin = 67.4*pi/180;
-%tmax = 67.5*pi/180;
-%tmin = 0*pi/180;
-%tmax = 85*pi/180;
 
-theta = linspace(tmin,tmax,1);
-phi = 45*pi/180;
 
 R1 = 140/2;
 R2 = 175/2;
@@ -130,7 +148,7 @@ epsilon(2,2,:) = epsAu;
 epsilon(1,1,:) = epsSiO2;
 epsilon(1,2,:) = epsSiO2;
 
-h = zeros(L,1); 
+h = zeros(L,1);
 h(5) = 0.0;
 h(4) = 25;
 h(3) = 180;
@@ -148,7 +166,7 @@ tau_y = exp(1j*beta_ref*periody);
 La = 0.5;
 
 N_FMM = 1;
-%{
+        %{
 save('ellipse_plasmonic.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'phi', 'delta',...
     'h', 'L', 'N_FMM', 'epsilon', 'refIndices', 'La', 'tau_x', 'tau_y',...
     'alpha_ref', 'beta_ref',...
@@ -161,23 +179,26 @@ load('ellipse_plasmonic.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'p
     'b_x1', 'b_x2', 'N_basis_x', 'N_basis_y', 'N_intervals_x', 'N_intervals_y',...
     'ellipse_parameters',...
     'n_points', 'eta', 'f1', 'verbose')
-%}
+        %}
 %calculate reflection and transmission
 [Rsum_1_4,Tsum_1_4, M_1_4, gammaminus_1_4] = ...
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
     h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
     b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
-    n_points, eta, f1, verbose);
-%{
+    n_points, eta, f1, verbose,...
+    Nlambda_eig, Nlambda_perturb, half_n_lambda, n_lambda_extra_perturb,...
+    Ntheta_eig,  Ntheta_perturb,  half_n_theta,  n_theta_extra_perturb,...
+    Nphi_eig,    Nphi_perturb,    half_n_phi,    n_phi_extra_perturb);
+        %{
 for i=1:L
     gammaminus(:,i)= sort(gammaminus(:,i));
 end
-    %}
+        %}
 load('ellipse_plasmonic_output.mat','Rsum_ellipses','Tsum_ellipses',...
     'M', 'gammaminus');
 difference_R_sum = abs(Rsum_1_4-Rsum_ellipses);
 difference_T_sum = abs(Tsum_1_4-Tsum_ellipses);
-%{
+        %{
 [l, ll] = size(lambda)
 [t,tt] = size(theta)
 [r,rr] = size(Rsum_ellipses)
@@ -197,18 +218,18 @@ colorbar
 
 figure(4);
 pcolor(lambda/1000,theta*180/pi,transpose(Rsum_ellipses))
-
+        
 xlabel('lambda for R');
 ylabel('theta');
 shading flat
 caxis([0 1])
 colorbar
 hold off
-    %}
-%{
+        %}
+        %{
 figure(1)
 plot(lambda, Rsum_ellipses, 'r', 'Linewidth', 2);
 %plot(lambda, transpose(Rsum), 'r', 'Linewidth', 2);
 hold off
-    %}
-
+        %}
+        
