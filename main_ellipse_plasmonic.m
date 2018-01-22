@@ -163,8 +163,8 @@ load('ellipse_plasmonic_perturb_1order_input.mat','figure_shape', 'dispersion',.
     'b_x1', 'b_x2', 'N_basis_x', 'N_basis_y', 'N_intervals_x', 'N_intervals_y',...
     'ellipse_parameters',...
     'n_points', 'eta', 'f1', 'verbose')
-load('ellipse_plasmonic_perturb_1order_output.mat','Rsum_1_4','Tsum_1_4',...
-    'gammaminus_1_4');
+load('ellipse_plasmonic_perturb_1order_output.mat','Rsum_p','Tsum_p',...
+    'gammaminus_p');
 
 %calculate reflection and transmission
 [Rsum,Tsum, M, gammaminus] = ...
@@ -178,8 +178,8 @@ for i=1:L
 end
     %}
 
-difference_R_sum = abs(Rsum_1_4-Rsum);
-difference_T_sum = abs(Tsum_1_4-Tsum);
+difference_R_sum = abs(Rsum_p-Rsum);
+difference_T_sum = abs(Tsum_p-Tsum);
 save('ellipse_plasmonic_difference_output.mat','difference_R_sum','difference_T_sum');
 %{
 [l, ll] = size(lambda)
