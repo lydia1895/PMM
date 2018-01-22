@@ -146,7 +146,9 @@ function [Rsum,Tsum, M, gammaminus] =...
                 i_perturb = 0;
                 i_lambda_perturb = half_n_lambda + 1 + i_perturb +...
                     (i_lambda_eig-1)*n_lambda_extra_perturb;
-                j_theta_perturb = j_theta_eig;
+                j_perturb = 0;
+                j_theta_perturb = half_n_theta + 1 + j_perturb +...
+                    (j_theta_eig-1)*n_theta_extra_perturb;
                 k_phi_perturb= k_phi_eig;
                 %%%%%%%%%%%%%%%%%%%%%refIndices we calculate for different lambda
                 if strcmp (figure_shape,'ellipse')==1 &&...
@@ -196,84 +198,95 @@ function [Rsum,Tsum, M, gammaminus] =...
                 
                 
                 %%%%%%%%%%%%%here we start perturbation calculation
-                for i_perturb = -half_n_lambda:half_n_lambda
-                    %if i_perturb ~=0
-                    i_lambda_perturb = half_n_lambda + 1 + i_perturb +...
-                        (i_lambda_eig-1)*n_lambda_extra_perturb
-                    lambda = lambda_full(i_lambda_perturb)
-                    %for now, theta and phi stay the same
-                    theta = theta_full(j_theta_perturb)
-                    phi = phi_full(k_phi_perturb);
-                    
-                    %%%%%%%%%%%%%we're in the same layer as we were
-                    %%%%%%%%%%%%%%%%%%%%%epsilon we calculate for different lambda
-                    if strcmp (figure_shape,'ellipse')==1 &&...
-                            strcmp (dispersion,'yes')==1
-                        refIndices_lambda = zeros(1,2);
-                        refIndices_lambda(1) = refIndices(i_lambda_perturb,1);
-                        refIndices_lambda(2) = refIndices(i_lambda_perturb,2);
-                        n1 = refIndices_lambda(1);
-                    end
-                    if strcmp (dispersion,'no')==1
-                        rrefIndices = refIndices;
-                    else
-                        rrefIndices = refIndices_lambda;
-                    end
-                    
-                    [alpha0,beta0,gamma0,k0,Ex0,Ey0] =...
-                        PMM_incident_wave_vector_and_field(lambda,theta,phi,delta,n1);
-                    
-                    
-                    for nlayer=1:L
-                        if i_perturb~=0
-                            
-                            if strcmp (figure_shape,'ellipse')==1 &&...
-                                    strcmp (dispersion,'yes')==1
-                                [eps_total, mu_total] =...
-                                    PMM_epsilon_ellipse_matrices(N_basis_x,N_basis_y,Nx,nx,Ny,ny,...
-                                    N_intervals_x,N_intervals_y,La,epsilon(nlayer,:,i_lambda_perturb),...
-                                    int_g, int_for_ellipse);
-                            end
-                            
-                            
-                            [L_HE_perturb, L_EH_perturb(:,:,nlayer)]= ...
-                                PMM_Maxwell_matrix(alpha_ref, beta_ref, k0, alpha0, beta0,...
-                                N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
-                                Dx, Dy, hx, hy, eps_total, mu_total);
-                            
-                            Lfull_perturb = L_HE_perturb*L_EH_perturb(:,:,nlayer);
-                            
-                            [H_perturb(:,:,nlayer), gammasqr_perturb(:,:,nlayer)] = ...
-                                eig_perturbation(Lfull_eig(:,:,nlayer), H_eig(:,:,nlayer),...
-                                gammasqr_eig(:,:,nlayer), Lfull_perturb, N_total_3);
-                        else
-                            L_EH_perturb(:,:,nlayer) = L_EH_eig(:,:,nlayer);
-                            H_perturb(:,:,nlayer) = H_eig(:,:,nlayer);
-                            gammasqr_perturb(:,:,nlayer) = gammasqr_eig(:,:,nlayer);
-                            
-                        end
-                    end
-                    
-                    
-                    [eta_R, eta_T, M,...
-                        gzero_t,gzero_norm_t,gamma_num_t,gammaminus] =...
-                        PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef,...
-                        Ex0, Ey0, alpha0,beta0,gamma0,k0, N_FMM, h, L, rrefIndices,...
-                        b_x1, b_x2, N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
-                        verbose, H_perturb, gammasqr_perturb, L_EH_perturb);
-                    
-                    Rsum(i_lambda_perturb,j_theta_perturb) = sum(eta_R);
-                    Tsum(i_lambda_perturb,j_theta_perturb) = sum(eta_T);
-                    gzero(i_lambda_perturb,j_theta_perturb) = gzero_t;
-                    gzero_norm(i_lambda_perturb,j_theta_perturb) = gzero_norm_t;
-                    gamma00(j_theta_perturb)=gamma0;
-                    gamma_num(j_theta_perturb)=gamma_num_t;
-                end
                 
+                for i_perturb = -half_n_lambda:half_n_lambda
+                    for j_perturb = -half_n_theta:half_n_theta
+                        
+                        i_lambda_perturb = half_n_lambda + 1 + i_perturb +...
+                            (i_lambda_eig-1)*n_lambda_extra_perturb
+                        lambda = lambda_full(i_lambda_perturb)
+                        
+                        j_theta_perturb = half_n_theta + 1 + j_perturb +...
+                            (j_theta_eig-1)*n_theta_extra_perturb
+                        %j_theta_perturb = j_theta_eig
+                        theta = theta_full(j_theta_perturb)
+                        
+                        phi = phi_full(k_phi_perturb);
+                        
+                        %%%%%%%%%%%%%we're in the same layer as we were
+                        %%%%%%%%%%%%%%%%%%%%%epsilon we calculate for different lambda
+                        if strcmp (figure_shape,'ellipse')==1 &&...
+                                strcmp (dispersion,'yes')==1
+                            refIndices_lambda = zeros(1,2);
+                            refIndices_lambda(1) = refIndices(i_lambda_perturb,1);
+                            refIndices_lambda(2) = refIndices(i_lambda_perturb,2);
+                            n1 = refIndices_lambda(1);
+                        end
+                        if strcmp (dispersion,'no')==1
+                            rrefIndices = refIndices;
+                        else
+                            rrefIndices = refIndices_lambda;
+                        end
+                        
+                        [alpha0,beta0,gamma0,k0,Ex0,Ey0] =...
+                            PMM_incident_wave_vector_and_field(lambda,theta,phi,delta,n1);
+                        
+                        
+                        for nlayer=1:L
+                            if (i_perturb~=0)
+                                
+                                if strcmp (figure_shape,'ellipse')==1 &&...
+                                        strcmp (dispersion,'yes')==1
+                                    [eps_total, mu_total] =...
+                                        PMM_epsilon_ellipse_matrices(N_basis_x,N_basis_y,Nx,nx,Ny,ny,...
+                                        N_intervals_x,N_intervals_y,La,epsilon(nlayer,:,i_lambda_perturb),...
+                                        int_g, int_for_ellipse);
+                                    % i_current = i_perturb;
+                                end
+                                
+                                
+                                [L_HE_perturb, L_EH_perturb(:,:,nlayer)]= ...
+                                    PMM_Maxwell_matrix(alpha_ref, beta_ref, k0, alpha0, beta0,...
+                                    N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
+                                    Dx, Dy, hx, hy, eps_total, mu_total);
+                                
+                                Lfull_perturb = L_HE_perturb*L_EH_perturb(:,:,nlayer);
+                                
+                                [H_perturb(:,:,nlayer), gammasqr_perturb(:,:,nlayer)] = ...
+                                    eig_perturbation(Lfull_eig(:,:,nlayer), H_eig(:,:,nlayer),...
+                                    gammasqr_eig(:,:,nlayer), Lfull_perturb, N_total_3);
+                            else
+                                L_EH_perturb(:,:,nlayer) = L_EH_eig(:,:,nlayer);
+                                H_perturb(:,:,nlayer) = H_eig(:,:,nlayer);
+                                gammasqr_perturb(:,:,nlayer) = gammasqr_eig(:,:,nlayer);
+                                
+                            end
+                        end
+                        
+                        
+                        
+                        
+                        [eta_R, eta_T, M,...
+                            gzero_t,gzero_norm_t,gamma_num_t,gammaminus] =...
+                            PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef,...
+                            Ex0, Ey0, alpha0,beta0,gamma0,k0, N_FMM, h, L, rrefIndices,...
+                            b_x1, b_x2, N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
+                            verbose, H_perturb, gammasqr_perturb, L_EH_perturb);
+                        
+                        Rsum(i_lambda_perturb,j_theta_perturb) = sum(eta_R);
+                        Tsum(i_lambda_perturb,j_theta_perturb) = sum(eta_T);
+                        gzero(i_lambda_perturb,j_theta_perturb) = gzero_t;
+                        gzero_norm(i_lambda_perturb,j_theta_perturb) = gzero_norm_t;
+                        gamma00(j_theta_perturb)=gamma0;
+                        gamma_num(j_theta_perturb)=gamma_num_t;
+                    end
+                end
             end
+            
         end
-        
     end
+    
+    
     
     %we can pack
     %alpha_ref,b_x1,N_intervals_x,N_basis_x,Dx,hx into one

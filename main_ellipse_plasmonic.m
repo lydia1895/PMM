@@ -23,12 +23,12 @@ lamnkSiO2 = MatParam_nk_SiO2_interpExportData;
 lamnkZep = MatParam_nk_Zep520A_interpExportData;
 
 Nlambda_eig = 2;
-n_lambda_extra_perturb = 7;
+n_lambda_extra_perturb = 5;
 Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
 
 Ntheta_eig = 2;
-n_theta_extra_perturb = 1;
+n_theta_extra_perturb = 5;
 Ntheta_perturb = n_theta_extra_perturb * Ntheta_eig;
 half_n_theta = floor((n_theta_extra_perturb-1)/2);
 
@@ -38,7 +38,7 @@ Nphi_perturb = n_phi_extra_perturb * Nphi_eig;
 half_n_phi = floor((n_phi_extra_perturb-1)/2);
 
 lmin = 1200;
-lmax = 1240;
+lmax = 1230;
 
 %dlambda_eig = (lmax-lmin)/(Nlambda_eig-1);
 %dlambda_perturb = (lmax-lmin)/n_lambda_extra_perturb;
@@ -49,7 +49,7 @@ lambda = linspace(lmin,lmax,Nlambda_perturb);
 tmin = 50*pi/180;
 tmax = 55*pi/180;
 
-theta = linspace(tmin,tmax,Ntheta_eig);
+theta = linspace(tmin,tmax,Ntheta_perturb);
 phi = 45*pi/180;
 
 %{
@@ -223,7 +223,7 @@ caxis([0 1])
 colorbar
     %}
     figure(4);
-    pcolor(lambda/1000,theta*180/pi,transpose(Rsum_1_4))
+    pcolor(lambda/1000,theta*180/pi,transpose(Rsum_p))
     
     xlabel('lambda for R');
     ylabel('theta');
