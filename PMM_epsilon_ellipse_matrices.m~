@@ -74,14 +74,14 @@ function [eps_total, mu_total] =...
         eps_int_Ey_g_down12=eps_int_Ey_g_down12+(eps_in-eps_out)*int_Ey_g_down12_ellipse;
         eps_int_Ex_g_down21=eps_int_Ex_g_down21+(eps_in-eps_out)*int_Ex_g_down21_ellipse;
         eps_int_Ey_g_down11=eps_int_Ey_g_down11+(eps_in-eps_out)*int_Ey_g_down11_ellipse;
-        eps_int_Ez_g_sqrt=eps_int_Ez_g_sqrt+(eps_in-eps_out)*int_Ez_sqrt_g_ellipse;
-    end
-    if (mu_in~=mu_out)
-        mu_int_Ex_g_down22=mu_int_Ex_g_down22+(mu_in-mu_out)*int_Ex_g_down22_ellipse;
-        mu_int_Ey_g_down12=mu_int_Ey_g_down12+(mu_in-mu_out)*int_Ey_g_down12_ellipse;
-        mu_int_Ex_g_down21=mu_int_Ex_g_down21+(mu_in-mu_out)*int_Ex_g_down21_ellipse;
-        mu_int_Ey_g_down11=mu_int_Ey_g_down11+(mu_in-mu_out)*int_Ey_g_down11_ellipse;
-        mu_int_Ez_g_sqrt=mu_int_Ez_g_sqrt+(mu_in-mu_out)*int_Ez_sqrt_g_ellipse;
+        
+        mu_int_Ex_g_down22=(mu_in-mu_out)*int_Ex_g_down22_ellipse;
+        mu_int_Ey_g_down12=(mu_in-mu_out)*int_Ey_g_down12_ellipse;
+        mu_int_Ex_g_down21=(mu_in-mu_out)*int_Ex_g_down21_ellipse;
+        mu_int_Ey_g_down11=(mu_in-mu_out)*int_Ey_g_down11_ellipse;
+        
+        eps_int_Ez_g_sqrt=(eps_in-eps_out)*int_Ez_sqrt_g_ellipse;
+        mu_int_Ez_g_sqrt=(mu_in-mu_out)*int_Ez_sqrt_g_ellipse;
     end
     
     %{
@@ -125,14 +125,12 @@ end
     eps_yx = -int_Dy_sqrt_g_full\eps_int_Ex_g_down21;
     eps_yy = int_Dy_sqrt_g_full\eps_int_Ey_g_down11;
     eps_zz = int_Dz_unity_full\eps_int_Ez_g_sqrt;
-   
     
     mu_xx = int_Dx_sqrt_g_full\mu_int_Ex_g_down22;
     mu_xy = -int_Dx_sqrt_g_full\mu_int_Ey_g_down12;
     mu_yx = -int_Dy_sqrt_g_full\mu_int_Ex_g_down21;
     mu_yy = int_Dy_sqrt_g_full\mu_int_Ey_g_down11;
     mu_zz = int_Dz_unity_full\mu_int_Ez_g_sqrt;
-   
     
     eps_total(:,:,1) = eps_xx;
     eps_total(:,:,2) = eps_xy;
