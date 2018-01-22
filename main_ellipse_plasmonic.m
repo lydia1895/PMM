@@ -178,8 +178,8 @@ for i=1:L
 end
     %}
 
-difference_R_sum = abs(Rsum_p-Rsum);
-difference_T_sum = abs(Tsum_p-Tsum);
+difference_R_sum = abs(Rsum_p-Rsum)/Rsum;
+difference_T_sum = abs(Tsum_p-Tsum)/Tsum;
 save('ellipse_plasmonic_difference_output.mat','difference_R_sum','difference_T_sum');
 %{
 [l, ll] = size(lambda)
