@@ -117,7 +117,7 @@ function [Rsum,Tsum, M, gammaminus] =...
     
     
     %[Nll,Nlambda_perturb] = size(lambda_full);
-    [Ntt,Ntheta_perturb] = size(theta_full);
+    %[Ntt,Ntheta_perturb] = size(theta_full);
     [Npp,Nphi] = size(phi_full);
     
     Rsum = zeros(Nlambda_perturb, Ntheta_perturb);
@@ -198,7 +198,7 @@ function [Rsum,Tsum, M, gammaminus] =...
                 
                 
                 %%%%%%%%%%%%%here we start perturbation calculation
-                
+                i_current = 1209;
                 for i_perturb = -half_n_lambda:half_n_lambda
                     for j_perturb = -half_n_theta:half_n_theta
                         
@@ -236,12 +236,12 @@ function [Rsum,Tsum, M, gammaminus] =...
                             if (i_perturb~=0)
                                 
                                 if strcmp (figure_shape,'ellipse')==1 &&...
-                                        strcmp (dispersion,'yes')==1
+                                        strcmp (dispersion,'yes')==1 %&& (i_current~=i_perturb)
                                     [eps_total, mu_total] =...
                                         PMM_epsilon_ellipse_matrices(N_basis_x,N_basis_y,Nx,nx,Ny,ny,...
                                         N_intervals_x,N_intervals_y,La,epsilon(nlayer,:,i_lambda_perturb),...
                                         int_g, int_for_ellipse);
-                                    % i_current = i_perturb;
+                                    i_current = i_perturb;
                                 end
                                 
                                 
