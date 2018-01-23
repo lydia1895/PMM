@@ -3,10 +3,10 @@ function [H_perturb, gammasqr_perturb] = ...
     
     
     delta_L = Lfull_perturb - Lfull_eig;
-    gammasqr_perturb = gammasqr_eig + diag(diag(transpose(H_eig)*delta_L*H_eig));
-    
     
     H_L_H = transpose(H_eig)*delta_L*H_eig;
+    gammasqr_perturb = gammasqr_eig + diag(diag(H_L_H));
+    
     lambda_row = transpose(diag(gammasqr_eig));
     lambda_matrix = repmat(lambda_row,2*N_total_3,1);
     diff_lambda = lambda_matrix - transpose(lambda_matrix);
