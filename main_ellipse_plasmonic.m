@@ -22,13 +22,13 @@ lamnkZnSe = MatParam_nk_ZnSe_interpExportData;
 lamnkSiO2 = MatParam_nk_SiO2_interpExportData;
 lamnkZep = MatParam_nk_Zep520A_interpExportData;
 
-Nlambda_eig = 2;
+Nlambda_eig = 1;
 n_lambda_extra_perturb = 3;
 Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
 
-Ntheta_eig = 2;
-n_theta_extra_perturb = 5;
+Ntheta_eig = 1;
+n_theta_extra_perturb = 3;
 Ntheta_perturb = n_theta_extra_perturb * Ntheta_eig;
 half_n_theta = floor((n_theta_extra_perturb-1)/2);
 
