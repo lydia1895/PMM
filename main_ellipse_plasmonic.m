@@ -22,13 +22,13 @@ lamnkZnSe = MatParam_nk_ZnSe_interpExportData;
 lamnkSiO2 = MatParam_nk_SiO2_interpExportData;
 lamnkZep = MatParam_nk_Zep520A_interpExportData;
 
-Nlambda_eig = 1;
-n_lambda_extra_perturb = 3;
+Nlambda_eig = 3;
+n_lambda_extra_perturb = 1;
 Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
 
 Ntheta_eig = 1;
-n_theta_extra_perturb = 3;
+n_theta_extra_perturb = 1;
 Ntheta_perturb = n_theta_extra_perturb * Ntheta_eig;
 half_n_theta = floor((n_theta_extra_perturb-1)/2);
 
@@ -166,7 +166,7 @@ tau_y = exp(1j*beta_ref*periody);
 La = 0.5;
 
 N_FMM = 1;
-
+%{
 save('ellipse_plasmonic_perturb_1order_input.mat','figure_shape', 'dispersion',...
     'lambda', 'theta', 'phi', 'delta',...
     'h', 'L', 'N_FMM', 'epsilon', 'refIndices', 'La', 'tau_x', 'tau_y',...
@@ -176,6 +176,7 @@ save('ellipse_plasmonic_perturb_1order_input.mat','figure_shape', 'dispersion',.
     'Nlambda_eig', 'Nlambda_perturb', 'half_n_lambda', 'n_lambda_extra_perturb',...
     'Ntheta_eig',  'Ntheta_perturb',  'half_n_theta',  'n_theta_extra_perturb',...
     'Nphi_eig',    'Nphi_perturb',    'half_n_phi',    'n_phi_extra_perturb')
+%}
 %{
 load('ellipse_plasmonic.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'phi', 'delta',...
     'h', 'L', 'N_FMM', 'epsilon', 'refIndices', 'La', 'tau_x', 'tau_y',...
@@ -185,7 +186,7 @@ load('ellipse_plasmonic.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'p
     'n_points', 'eta', 'f1', 'verbose')
 %}
 %calculate reflection and transmission
-[Rsum_p,Tsum_p, M_p, gammaminus_p] = ...
+[Rsum,Tsum, M_p, gammaminus] = ...
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
     h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
     b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
@@ -199,7 +200,11 @@ for i=1:L
 end
     %}
     
-    save('ellipse_plasmonic_perturb_1order_output.mat','Rsum_p','Tsum_p', 'gammaminus_p')
+    load('ellipse_plasmonic_perturb_1order_output.mat','Rsum_p','Tsum_p', 'gammaminus_p')
+    diff_R = abs((Rsum-Rsum_p)./Rsum)
+    
+    
+    
     %load('ellipse_plasmonic_output.mat','Rsum_ellipses','Tsum_ellipses',...
     %    'M', 'gammaminus');
     %difference_R_sum = abs(Rsum_1_4-Rsum);

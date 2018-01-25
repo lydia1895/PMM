@@ -30,19 +30,16 @@ function [H_perturb, gammasqr_perturb] = ...
     number_iterations = 0
     
     fin = 1;
-    while number_iterations<3 %(fin>0.1)
+    while number_iterations<2 %(fin>0.1)
         number_iterations = number_iterations+1
         [delta_lambda_new,delta_phi_new] = eig_iteration(delta_K,K1,...
             phi0,delta_phi,delta_phi0,lambda0,delta_lambda,N_total_3);
         %%%test
-        %{
+        
         delta_lambda_1 = delta_lambda(1,1)
         delta_phi_1 = delta_phi(1,1)
         delta_lambda_new_1 = delta_lambda_new(1,1)
         delta_phi_new_1 = delta_phi_new(1,1)
-        %}
-        [row_delta_lambda_new,col_delta_lambda_new] = find(isnan(delta_lambda_new));
-        max_nan_delta_lambda_new = max(row_delta_lambda_new)
         %%%
         fin = max(diag(abs(delta_lambda_new-delta_lambda))./diag(abs(delta_lambda)))
         

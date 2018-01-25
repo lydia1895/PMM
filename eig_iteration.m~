@@ -3,7 +3,7 @@ function [delta_lambda_new,delta_phi_new] =...
     
     %step 4
     phi1 = phi0 + delta_phi;
-    delta_lambda_new = diag(diag(transpose(phi0)*delta_K*phi1)./(diag(transpose(phi0)*phi1)));
+    delta_lambda_new = diag(diag(transpose(phi0)*delta_K*phi1))./(diag(transpose(phi0)*phi1)));
     lambda1 = lambda0 + delta_lambda_new;
     
     %step 5
