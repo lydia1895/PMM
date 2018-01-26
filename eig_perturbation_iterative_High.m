@@ -39,7 +39,7 @@ function [H_perturb, gammasqr_perturb] = ...
     [row_K0,col_K0] = find(isnan(inv_K0));
     max_nan_inv__K0 = max(row_K0)
     %}
-    while number_iterations<3
+    while number_iterations<10
         number_iterations = number_iterations+1
         
         %%%test

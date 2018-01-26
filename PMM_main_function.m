@@ -233,8 +233,12 @@ function [Rsum,Tsum, M, gammaminus] =...
                         
                         
                         for nlayer=1:L
-                            if (i_perturb~=0)
+                            if (i_perturb==0)&&(j_perturb==0)
+                                L_EH_perturb(:,:,nlayer) = L_EH_eig(:,:,nlayer);
+                                H_perturb(:,:,nlayer) = H_eig(:,:,nlayer);
+                                gammasqr_perturb(:,:,nlayer) = gammasqr_eig(:,:,nlayer);
                                 
+                            else
                                 if strcmp (figure_shape,'ellipse')==1 &&...
                                         strcmp (dispersion,'yes')==1 %&& (i_current~=i_perturb)
                                     [eps_total, mu_total] =...
@@ -254,16 +258,13 @@ function [Rsum,Tsum, M, gammaminus] =...
                                 [H_perturb(:,:,nlayer), gammasqr_perturb(:,:,nlayer)] = ...
                                     eig_perturbation_iterative_High(Lfull_eig(:,:,nlayer), H_eig(:,:,nlayer),...
                                     gammasqr_eig(:,:,nlayer), Lfull_perturb, N_total_3);
+                                
+                                title = 'perturbations'
                                 %{
                                 [H_perturb(:,:,nlayer), gammasqr_perturb(:,:,nlayer)] = ...
                                     eig_perturbation(Lfull_eig(:,:,nlayer), H_eig(:,:,nlayer),...
                                     gammasqr_eig(:,:,nlayer), Lfull_perturb, N_total_3);
                                 %}
-                            else
-                                L_EH_perturb(:,:,nlayer) = L_EH_eig(:,:,nlayer);
-                                H_perturb(:,:,nlayer) = H_eig(:,:,nlayer);
-                                gammasqr_perturb(:,:,nlayer) = gammasqr_eig(:,:,nlayer);
-                                
                             end
                         end
                         
