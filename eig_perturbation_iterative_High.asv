@@ -25,7 +25,7 @@ function [H_perturb, gammasqr_perturb] = ...
     delta_phi = phi0*X;
     
     %delete spurious solution as Eldred did?
-    delta_phi = delta_phi + phi0;
+    %delta_phi = delta_phi + phi0;
     
     number_iterations = 0
     
@@ -39,7 +39,7 @@ function [H_perturb, gammasqr_perturb] = ...
     [row_K0,col_K0] = find(isnan(inv_K0));
     max_nan_inv__K0 = max(row_K0)
     %}
-    while number_iterations<3
+    while number_iterations<5
         number_iterations = number_iterations+1
         
         %%%test
@@ -66,13 +66,12 @@ function [H_perturb, gammasqr_perturb] = ...
         R = triu(R,1) + eye(2*N_total_3,2*N_total_3);
         
         %delta_R = -transpose(delta_phi_previous)*phi1 -...
-         %   transpose(phi1)*delta_phi_previous;
+        %    transpose(phi1)*delta_phi_previous;
         delta_R = -transpose(Y)*phi1 -...
             transpose(phi1)*Y;
         delta_R = triu(delta_R,1);
         Z = Y*R + phi0*delta_R;
         
-        %Z=Y;
         %step 6 - mass normalization, Eldred 1992
         b = 2*transpose(Z)*phi0;
         a = transpose(Z)*Z;
