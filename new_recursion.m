@@ -22,12 +22,11 @@ Z = cat(2,Z_plus, Z_minus);
 
 unity = eye(2*NN,2*NN);
 inv_Z=Z\unity;
-ZX1 = inv_Z*X1;
-ZX2 = inv_Z*X2;
-%{
+%ZX1 = inv_Z*X1;
+%ZX2 = inv_Z*X2;
+
 ZX1 = Z\X1;
 ZX2 = Z\X2;
-%}
 
 Tuu_p = ZX1(1:NN,:);
 Rud_p = ZX2(1:NN,:);

@@ -7,7 +7,7 @@ delete(allPlots);
 
 %format long
 %%%%%%%%%conditions
-%{
+
 verbose = 7;
 
 figure_shape = 'ellipse';
@@ -21,7 +21,24 @@ N_basis_y = N_b*ones(N_intervals_y,1);
 lambda = 2*pi;
 %theta = linspace(26.5,26.9,10)*pi/180;
 %theta = linspace(0,26.85,2)*pi/180;
-theta = linspace(0,0,1)*pi/180;
+
+Nlambda_eig = 1;
+n_lambda_extra_perturb = 1;
+Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
+half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
+
+Ntheta_eig = 3;
+n_theta_extra_perturb = 3;
+Ntheta_perturb = n_theta_extra_perturb * Ntheta_eig;
+half_n_theta = floor((n_theta_extra_perturb-1)/2);
+
+Nphi_eig = 1;
+n_phi_extra_perturb = 1;
+Nphi_perturb = n_phi_extra_perturb * Nphi_eig;
+half_n_phi = floor((n_phi_extra_perturb-1)/2);
+
+theta = linspace(0,2,Ntheta_perturb)*pi/180;
+
 phi = 0*pi/180;
 
 %for ASR
@@ -88,7 +105,7 @@ La = 0.5;
 %to get diffraction in certain orders
 
 N_FMM = 1;
-%}
+
 %{
 load('ellipse_2medias.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'phi', 'delta',...
     'h', 'L', 'N_FMM', 'epsilon', 'refIndices', 'La', 'tau_x', 'tau_y',...
@@ -105,14 +122,14 @@ load('ellipse_2medias_normal_incidence.mat','figure_shape', 'dispersion', 'lambd
     'ellipse_parameters',...
     'n_points', 'eta', 'f1', 'verbose')
 %}
-
+%{
 load('ellipse_2medias.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'phi', 'delta',...
     'h', 'L', 'N_FMM', 'epsilon', 'refIndices', 'La', 'tau_x', 'tau_y',...
     'alpha_ref', 'beta_ref',...
     'b_x1', 'b_x2', 'N_basis_x', 'N_basis_y', 'N_intervals_x', 'N_intervals_y',...
     'ellipse_parameters',...
     'n_points', 'eta', 'f1', 'verbose')
-
+%}
     
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -139,7 +156,10 @@ hold off
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
     h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
     b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
-    n_points, eta, f1, verbose);
+    n_points, eta, f1, verbose,...
+     Nlambda_eig, Nlambda_perturb, half_n_lambda, n_lambda_extra_perturb,...
+    Ntheta_eig,  Ntheta_perturb,  half_n_theta,  n_theta_extra_perturb,...
+    Nphi_eig,    Nphi_perturb,    half_n_phi,    n_phi_extra_perturb);
 for i=1:L
     gammaminus_1_4(:,i)= sort(gammaminus_1_4(:,i));
 end

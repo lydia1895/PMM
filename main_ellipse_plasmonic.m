@@ -28,7 +28,7 @@ Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
 
 Ntheta_eig = 1;
-n_theta_extra_perturb = 3;
+n_theta_extra_perturb = 1;
 Ntheta_perturb = n_theta_extra_perturb * Ntheta_eig;
 half_n_theta = floor((n_theta_extra_perturb-1)/2);
 
@@ -46,8 +46,8 @@ lmax = 1220;
 lambda = linspace(lmin,lmax,Nlambda_perturb);
 
 
-tmin = 10*pi/180;
-tmax = 12*pi/180;
+tmin = 50*pi/180;
+tmax = 55*pi/180;
 
 theta = linspace(tmin,tmax,Ntheta_perturb);
 phi = 45*pi/180;
@@ -186,7 +186,7 @@ load('ellipse_plasmonic.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'p
     'n_points', 'eta', 'f1', 'verbose')
 %}
 %calculate reflection and transmission
-[Rsum_p,Tsum_p, M_p, gammaminus_p] = ...
+[Rsum_p,Tsum_p, M, gammaminus_p] = ...
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
     h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
     b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
@@ -199,9 +199,10 @@ for i=1:L
     gammaminus(:,i)= sort(gammaminus(:,i));
 end
     %}
-    load('ellipse_plasmonic_no_perturb_output.mat','Rsum','Tsum')
+    load('ellipse_plasmonic_no_perturb_output.mat','Rsum','Tsum','theta');
     %load('ellipse_plasmonic_perturb_1order_output.mat','Rsum_p','Tsum_p', 'gammaminus_p')
-    diff_R = abs((Rsum-Rsum_p)./Rsum)
+    diff_R = abs((Rsum-Rsum_p)./Rsum);
+    diff_theta = abs(theta - theta_p);
     
     
     
