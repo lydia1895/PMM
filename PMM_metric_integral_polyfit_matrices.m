@@ -14,6 +14,15 @@ g_down21 = g_down12;
 g_down22 = dx_x2.^2 + dy_x2.^2;
 g_det = g_down11.*g_down22 - g_down12.*g_down21;
 
+%%%%%%%%%%%%%test
+%{
+g_det_sqrt = dx_x1.*dy_x2 - dy_x1.*dx_x2;
+g_det_sqrt = g_det_sqrt - abs(g_det_sqrt);
+g_det_max = max(g_det_sqrt(:))
+g_det_min = min(g_det_sqrt(:))
+%}
+%%%%%%%%%%%%%%%%%%%
+
 g_sqrt = g_det.^0.5;
 
 ksi1 = linspace(-uni,uni,n_points);

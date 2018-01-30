@@ -120,6 +120,25 @@ end
     %}
     
     unity = eye(N_total_3,N_total_3);
+    
+    inv_int_Dx_sqrt_g_full = unity/int_Dx_sqrt_g_full;
+    inv_int_Dy_sqrt_g_full = unity/int_Dy_sqrt_g_full;
+    inv_int_Dz_unity_full = unity/int_Dz_unity_full;
+    
+    
+    eps_xx = inv_int_Dx_sqrt_g_full*eps_int_Ex_g_down22;
+    eps_xy = -inv_int_Dx_sqrt_g_full*eps_int_Ey_g_down12;
+    eps_yx = -inv_int_Dy_sqrt_g_full*eps_int_Ex_g_down21;
+    eps_yy = inv_int_Dy_sqrt_g_full*eps_int_Ey_g_down11;
+    eps_zz = inv_int_Dz_unity_full*eps_int_Ez_g_sqrt;
+   
+    
+    mu_xx = inv_int_Dx_sqrt_g_full*mu_int_Ex_g_down22;
+    mu_xy = -inv_int_Dx_sqrt_g_full*mu_int_Ey_g_down12;
+    mu_yx = -inv_int_Dy_sqrt_g_full*mu_int_Ex_g_down21;
+    mu_yy = inv_int_Dy_sqrt_g_full*mu_int_Ey_g_down11;
+    mu_zz = inv_int_Dz_unity_full*mu_int_Ez_g_sqrt;
+    %{
     eps_xx = int_Dx_sqrt_g_full\eps_int_Ex_g_down22;
     eps_xy = -int_Dx_sqrt_g_full\eps_int_Ey_g_down12;
     eps_yx = -int_Dy_sqrt_g_full\eps_int_Ex_g_down21;
@@ -132,7 +151,7 @@ end
     mu_yx = -int_Dy_sqrt_g_full\mu_int_Ex_g_down21;
     mu_yy = int_Dy_sqrt_g_full\mu_int_Ey_g_down11;
     mu_zz = int_Dz_unity_full\mu_int_Ez_g_sqrt;
-   
+   %}
     
     eps_total(:,:,1) = eps_xx;
     eps_total(:,:,2) = eps_xy;

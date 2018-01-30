@@ -53,9 +53,7 @@ if strcmp (figure_shape,'ellipse')==1
     %%%%%%%%%%last right
     [dx_x1,dx_x2,dy_x1,dy_x2] =...
         ellipse_coordinates_and_derivatives(ellipse_parameters,n_points,uni);
-    
-    [test] =...
-    ellipse_coordinates_and_derivatives_for_1D_polyfit(ellipse_parameters,n_points,uni)
+   
     if (verbose>5)
         title = 'integrals with metric tensor for eps and mu for ellipse'
     end
@@ -65,6 +63,39 @@ if strcmp (figure_shape,'ellipse')==1
         PMM_metric_integral_polyfit_matrices(N_basis_x,N_basis_y,Nx,nx,Ny,ny,...
         N_intervals_x,N_intervals_y,n_points,La,ax,ay,hx,hy,dx_x1,dx_x2,dy_x1,dy_x2,uni,b_x1,b_x2);
     
+     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%test
+    [int_Ex_g_down_12_1D,int_Ey_g_down_12_1D,int_Ey_g_down_11_1D,int_Ex_g_down_22_1D] =...
+    ellipse_coordinates_and_derivatives_for_1D_polyfit(ellipse_parameters,n_points,...
+    La,Nx,nx,N_basis_x,ax,Ny,ny,N_basis_y,ay,N_total_3);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+
+    int_Ex_g_down21_full = int_g(:,:,7);
+    int_Ey_g_down12_full = int_g(:,:,6);
+    int_Ey_g_down11_full = int_g(:,:,8);
+    int_Ex_g_down22_full = int_g(:,:,5);
+    
+    m = max(int_Ex_g_down22_full(:))
+    m1 = max(int_Ex_g_down_22_1D(:))
+    %best test
+    Ex_g_down_22_diff = abs(int_Ex_g_down_22_1D - int_Ex_g_down22_full);
+    [Ex_g_down_22_diff_max,I] = max(Ex_g_down_22_diff)   
+    numbers = [1 25 50 75 100 125 150 175 200 225]
+    for i =1:10
+    diff = Ex_g_down_22_diff_max(I(numbers(i)))
+    Ey_1D = int_Ex_g_down_22_1D(I(numbers(i)),numbers(i))
+    Ey_old = int_Ex_g_down22_full(I(numbers(i)),numbers(i))
+    end
+    
+    %{
+    m = max(int_Ex_g_down21_full(:))
+    m1 = max(int_Ex_g_down_12_1D(:))
+    mnomnom = int_Ex_g_down21_full(2,4)
+    mnomnom1 = int_Ex_g_down_12_1D(2,4)
+    Ex_g_down_12_diff = abs(int_Ex_g_down_12_1D - int_Ex_g_down21_full);
+    [Ex_g_down_12_diff,I] = max(Ex_g_down_12_diff(:))
+    int_Ex_g_down_12_1D(I)
+    int_Ex_g_down21_full(I)
+    %}
 end
 
 if strcmp (figure_shape,'ellipse')==1 && strcmp (dispersion,'no')==1
@@ -315,10 +346,7 @@ end
 
 figure(2)
 theta = theta_full*180/pi;
-t = size(theta)
-g0 = size(gamma00)
-gnum = size(gamma_num)
-gz = size(gzero)
+
 plot(theta,gamma00,'r',theta,gamma_num,'g',theta,gzero,'m','Linewidth', 2)
 %plot(theta,gamma00,'r',theta,gzero,'m','Linewidth', 2)
 ylabel('abs(min(kz0-gamma(i)))')

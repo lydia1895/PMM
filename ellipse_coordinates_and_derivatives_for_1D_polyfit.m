@@ -1,7 +1,8 @@
-function [test] =...
+function [int_Ex_g_down_12_1D,int_Ey_g_down_12_1D,int_Ey_g_down_11_1D,int_Ex_g_down_22_1D] =...
     ellipse_coordinates_and_derivatives_for_1D_polyfit(ellipse_parameters,n_points,...
-    La,Nx,nx,N_basis_x,ax,N_intervals_x,b_x1,Ny,ny,N_basis_y,ay,N_intervals_y,b_x2)
-test = 123;
+    La,Nx,nx,N_basis_x,ax,Ny,ny,N_basis_y,ay,N_total_3)
+
+
 
 R1 = ellipse_parameters(1);
 R2 = ellipse_parameters(2);
@@ -20,7 +21,8 @@ x2_t_minus = P2/2-Q2;
 
 b_x1 = [0 x1_t_minus x1_t_plus P1];
 b_x2 = [0 x2_t_minus x2_t_plus P2];
-
+[Tx, aTx, Ux] = PMM_T_matrices(Nx,nx,N_basis_x,ax,La,N_intervals_x,b_x1);
+[Ty, aTy, Uy] = PMM_T_matrices(Ny,ny,N_basis_y,ay,La,N_intervals_y,b_x2);
 
 ksi1 = linspace(-1,1,n_points);
 ksi2 = linspace(-1,1,n_points);
@@ -105,8 +107,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%dy/dx2
 for nx=1:n_points
 gx_y_x2(:,1,nx) = x2_minus(:,nx)/x2_t_minus;
-gx_y_x2(:,2,nx,ny) = (x2_plus(:,nx)-x2_minus(:,nx))/(x2_t_plus-x2_t_minus);
-gx_y_x2(:,3,nx,ny) = (x2_plus(:,nx)-P2)/(x2_t_plus-P2);
+gx_y_x2(:,2,nx) = (x2_plus(:,nx)-x2_minus(:,nx))/(x2_t_plus-x2_t_minus);
+gx_y_x2(:,3,nx) = (x2_plus(:,nx)-P2)/(x2_t_plus-P2);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%dx/dx2
 for ny=1:n_points
@@ -139,73 +141,76 @@ f1y_y_x1(:,2,ny) = (x2(2,ny)-x2_t_minus)/(x2_t_plus-x2_t_minus);
 f2y_y_x1(:,2,ny) = (x2(2,ny)-x2_t_plus)/(x2_t_minus-x2_t_plus);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-comp_x = zeros(n_points,1);
-comp_y = zeros(n_points,1);
-[Tx, aTx, Ux] = PMM_T_matrices(Nx,nx,N_basis_x,ax,La,N_intervals_x,b_x1);
-[Ty, aTy, Uy] = PMM_T_matrices(Ny,ny,N_basis_y,ay,La,N_intervals_y,b_x2);
-%%%%%%%%%%%%%%(dx/dx1)*(dx/dx2)
-dx_dx1_dx_dx2_comp_x = ux_x_x2;
-dx_dx1_dx_dx2_comp_y = gy_x_x1.*vy_x_x2;
-dx_dx1_dx_dx2_on2_x1_comp_x_1 = f1x_x_x2;
-dx_dx1_dx_dx2_on2_x1_comp_x_2 = f2x_x_x2;
-dx_dx1_dx_dx2_on2_x1_comp_y_1 = gy_x_x1.*g1y_x_x2;
-dx_dx1_dx_dx2_on2_x1_comp_y_2 = gy_x_x1.*g2y_x_x2;
+comp_x = zeros(1,n_points);
+comp_y = zeros(1,n_points);
 
-full_matrix_dx_dx1_dx_dx2 = zeros(N_total_3,N_total_3);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%(dx/dx1)*(dx/dx2)
+[matrix_dx_dx1_dx_dx2_for_Ex,ellipse_matrix_dx_dx1_dx_dx2_for_Ex,...
+    matrix_dx_dx1_dx_dx2_for_Ey,ellipse_matrix_dx_dx1_dx_dx2_for_Ey]=...
+    dx_dx1_dx_dx2(gy_x_x1,ux_x_x2,vy_x_x2, f1x_x_x2, f2x_x_x2, g1y_x_x2, g2y_x_x2,...
+    N_total_3, Ux,Tx,aTx,Uy,Ty,aTy,ksi);            
+%%%%%%%%%%%%%%(dy/dx1)*(dy/dx2)
+[matrix_dy_dx1_dy_dx2_for_Ex,ellipse_matrix_dy_dx1_dy_dx2_for_Ex,...
+    matrix_dy_dx1_dy_dx2_for_Ey,ellipse_matrix_dy_dx1_dy_dx2_for_Ey]=...
+    dy_dx1_dy_dx2(gx_y_x2,uy_y_x1,vx_y_x1,g1x_y_x1,g2x_y_x1,f1y_y_x1,f2y_y_x1,...
+    N_total_3, Ux,Tx,aTx,Uy,Ty,aTy,ksi);
+%%%%%%
+int_Ex_g_down_12_1D = matrix_dy_dx1_dy_dx2_for_Ex + matrix_dx_dx1_dx_dx2_for_Ex;
+int_Ey_g_down_12_1D = matrix_dy_dx1_dy_dx2_for_Ey + matrix_dx_dx1_dx_dx2_for_Ey;
+
+int_Ex_g_down_12_ellipse_1D = ellipse_matrix_dx_dx1_dx_dx2_for_Ex + ellipse_matrix_dy_dx1_dy_dx2_for_Ex;
+int_Ey_g_down_12_ellipse_1D = ellipse_matrix_dx_dx1_dx_dx2_for_Ey + ellipse_matrix_dy_dx1_dy_dx2_for_Ey;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%(dx/dx1)^2
+[matrix_dx_dx1_sqr_for_Ey,ellipse_matrix_dx_dx1_sqr_for_Ey]=...
+    dx_dx1_sqr(gy_x_x1,N_total_3, Ux,Tx,aTx,Uy,Ty,aTy,ksi);
+%%%%%%%%%%%%%%(dy/dx1)^2
+[matrix_dy_dx1_sqr_for_Ey,ellipse_matrix_dy_dx1_sqr_for_Ey]=...
+    dy_dx1_sqr(vx_y_x1,uy_y_x1,g1x_y_x1,g2x_y_x1,f1y_y_x1,f2y_y_x1,...
+    N_total_3, Ux,Tx,aTx,Uy,Ty,aTy,ksi);
+%%%%%%
+int_Ey_g_down_11_1D = matrix_dx_dx1_sqr_for_Ey + matrix_dy_dx1_sqr_for_Ey;
+int_Ey_g_down_11_ellipse_1D = ellipse_matrix_dx_dx1_sqr_for_Ey + ellipse_matrix_dy_dx1_sqr_for_Ey;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%(dy/dx2)^2
+[matrix_dy_dx2_sqr_for_Ex,ellipse_matrix_dy_dx2_sqr_for_Ex]=...
+    dy_dx2_sqr(gx_y_x2, N_total_3, Ux,Tx,aTx,Uy,Ty,aTy,ksi);
+%%%%%%%%%%%%%%%%%%%(dx/dx2)^2
+[matrix_dx_dx2_sqr_for_Ex,ellipse_matrix_dx_dx2_sqr_for_Ex]=...
+    dx_dx2_sqr(ux_x_x2,vy_x_x2,f1x_x_x2,f2x_x_x2,g1y_x_x2, g2y_x_x2,...
+    N_total_3, Ux,Tx,aTx,Uy,Ty,aTy,ksi);
+%%%%%%
+int_Ex_g_down_22_1D = matrix_dy_dx2_sqr_for_Ex + matrix_dx_dx2_sqr_for_Ex;
+int_Ex_g_down_22_ellipse_1D = ellipse_matrix_dy_dx2_sqr_for_Ex + ellipse_matrix_dx_dx2_sqr_for_Ex;
+            
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[matrix_dx_dx1_sqr_for_Ez,ellipse_matrix_dx_dx1_sqr_for_Ez,...
+    matrix_dx_dx1_sqr_for_Dx,ellipse_matrix_dx_dx1_sqr_for_Dx,...
+    matrix_dx_dx1_sqr_for_Dy,ellipse_matrix_dx_dx1_sqr_for_Dy]=...
+    dx_x1_sqr(gx_y_x2,gy_x_x1, N_total_3, Ux,Tx,aTx,Uy,Ty,aTy,ksi);
+%%%%%%%%%%%%%%(dx/dx1)*(dy/dx2)
+dx_dx1_dy_dx2_comp_x = gx_y_x2;
+dx_dx1_dy_dx2_comp_y = gy_x_x1;
+matrix_dx_dx1_dy_dx2_for_Ez = zeros(N_total_3,N_total_3);
 for num_x = 1:3
     for num_y = 1:3
-        if numx~=2
-            comp_x(:,1) = dx_dx1_dx_dx2_comp_x(num_x,num_y,:); 
+            %for Ez
+            comp_x(1,:) = dx_dx1_dy_dx2_comp_x(num_x,num_y,:); 
             matrix_comp_x = polyfit_1D_and_matrices(comp_x,ksi,...
                 Ux(num_x,:,:),Tx(num_x,:,:),aTx(num_x,:,:));
             
-            comp_y(:,1) = dx_dx1_dx_dx2_comp_y(num_x,num_y,:); 
+            comp_y(1,:) = dx_dx1_dy_dx2_comp_y(num_x,num_y,:); 
             matrix_comp_y = polyfit_1D_and_matrices(comp_y,ksi,...
                 Uy(num_y,:,:),Ty(num_y,:,:),aTy(num_y,:,:));
             
             matrix_x_y = kron(matrix_comp_x,matrix_comp_y);
-            full_matrix_dx_dx1_dx_dx2 = full_matrix_dx_dx1_dx_dx2 + matrix_x_y;
-        else
-            comp_x(:,1) = dx_dx1_dx_dx2_on2_x1_comp_x_1(num_x,num_y,:); 
-            matrix_comp_x_1 = polyfit_1D_and_matrices(comp_x,ksi,...
-                Ux(num_x,:,:),Tx(num_x,:,:),aTx(num_x,:,:));
-            
-            comp_y(:,1) = dx_dx1_dx_dx2_on2_x1_comp_y_1(num_x,num_y,:); 
-            matrix_comp_y_1 = polyfit_1D_and_matrices(comp_y,ksi,...
-                Uy(num_y,:,:),Ty(num_y,:,:),aTy(num_y,:,:));
-            matrix_x1_y1 = kron(matrix_comp_x_1,matrix_comp_y_1);
-            
-            
-            comp_x(:,1) = dx_dx1_dx_dx2_on2_x1_comp_x_2(num_x,num_y,:); 
-            matrix_comp_x_2 = polyfit_1D_and_matrices(comp_x,ksi,...
-                Ux(num_x,:,:),Tx(num_x,:,:),aTx(num_x,:,:));
-            
-            comp_y(:,1) = dx_dx1_dx_dx2_on2_x1_comp_y_2(num_x,num_y,:); 
-            matrix_comp_y_2 = polyfit_1D_and_matrices(comp_y,ksi,...
-                Uy(num_y,:,:),Ty(num_y,:,:),aTy(num_y,:,:));
-            matrix_x2_y2 = kron(matrix_comp_x_2,matrix_comp_y_2);
-            
-            
-            full_matrix_dx_dx1_dx_dx2 = full_matrix_dx_dx1_dx_dx2 + matrix_x1_y1 + matrix_x2_y2;
+            matrix_dx_dx1_dy_dx2_for_Ez = matrix_dx_dx1_dy_dx2_for_Ez + matrix_x_y;
             if (num_x==2)&&(num_y==2)
-                ellipse_matrix_dx_dx1_dx_dx2 = matrix_x1_y1 + matrix_x2_y2;
+                ellipse_matrix_dx_dx1_dy_dx2_for_Ez = matrix_x_y;
             end
-            
-        end
     end
 end
-%%%%%%%%%%%%%%(dx/dx1)*(dy/dx2)
-dx_dx1_dy_dx2_comp_x = gx_y_x2;
-dx_dx1_dy_dx2_comp_x = gy_x_x1;
-            
-%%%%%%%%%%%%%%(dy/dx1)*(dy/dx2)
-dy_dx1_dy_dx2_comp_x = gx_y_x2.*vx_y_x1;
-dy_dx1_dy_dx2_comp_y = uy_y_x1;
-dy_dx1_dy_dx2_on2_x2_comp_x_1 = gx_y_x2.*g1x_y_x1;
-dy_dx1_dy_dx2_on2_x2_comp_x_2 = gx_y_x2.*g2x_y_x1;
-dy_dx1_dy_dx2_on2_x2_comp_y_1 = f1y_y_x1;
-dy_dx1_dy_dx2_on2_x2_comp_y_2 = f2y_y_x1;
-
 %%%%%%%%%%%%%%(dx/dx2)*(dy/dx1)
 dx_dx2_dy_dx1_comp_x = ux_x_x2.*vx_y_x1;
 dx_dx2_dy_dx1_comp_y = vy_x_x2.*uy_y_x1;
@@ -218,8 +223,8 @@ dx_dx2_dy_dx1_on2_x1_comp_y_2 = uy_y_x1.*g2y_x_x2;
 
 dx_dx2_dy_dx1_on2_x2_comp_x_1 = ux_x_x2.*g1x_y_x1;
 dx_dx2_dy_dx1_on2_x2_comp_x_2 = ux_x_x2.*g2x_y_x1;
-dx_dx2_dy_dx1_on2_x2_comp_y_1 = vy_x_x2.*f1x_y_x1;
-dx_dx2_dy_dx1_on2_x2_comp_y_2 = vy_x_x2.*f2x_y_x1;
+dx_dx2_dy_dx1_on2_x2_comp_y_1 = vy_x_x2.*f1y_y_x1;
+dx_dx2_dy_dx1_on2_x2_comp_y_2 = vy_x_x2.*f2y_y_x1;
 
 
 dx_dx2_dy_dx1_on22_comp_x_1 = f1x_x_x2.*g1x_y_x1;
@@ -231,33 +236,6 @@ dx_dx2_dy_dx1_on22_comp_y_1 = g2y_x_x2.*f1y_y_x1;
 dx_dx2_dy_dx1_on22_comp_y_1 = g1y_x_x2.*f2y_y_x1;
 dx_dx2_dy_dx1_on22_comp_y_1 = g2y_x_x2.*f2y_y_x1;
 
-%%%%%%%%%%%%%%%%%%(dx/dx1)^2
-dx_dx1_sqr_comp_y = gy_x_x1.^2;
-%%%%%%%%%%%%%%%%%%(dy/dx2)^2
-dy_dx2_sqr_comp_x = gx_y_x2.^2;
 
-%%%%%%%%%%%%%%%%%%(dy/dx1)^2
-dy_dx1_sqr_comp_x = vx_y_x1.^2;
-dy_dx1_sqr_comp_y = uy_y_x1.^2;
-
-dy_dx1_sqr_on2_x2_comp_x_1 = g1x_y_x1.^2;
-dy_dx1_sqr_on2_x2_comp_x_2 = 2*g1x_y_x1.*g2x_y_x1;
-dy_dx1_sqr_on2_x2_comp_x_3 = g2x_y_x1.^2;
-
-dy_dx1_sqr_on2_x2_comp_y_1 = f1x_y_x1.^2;
-dy_dx1_sqr_on2_x2_comp_y_2 = f1x_y_x1.*f2x_y_x1;
-dy_dx1_sqr_on2_x2_comp_y_3 = f2x_y_x1.^2;
-
-%%%%%%%%%%%%%%%%%%%(dx/dx2)^2
-dx_dx2_sqr_comp_x = ux_x_x2.^2;
-dx_dx2_sqr_comp_y = vy_x_x2.^2;
-
-dx_dx2_sqr_on2_x1_comp_x_1 = f1x_x_x2.^2;
-dx_dx2_sqr_on2_x1_comp_x_2 = 2*f1x_x_x2.*f2x_x_x2;
-dx_dx2_sqr_on2_x1_comp_x_3 = f2x_x_x2.^2;
-
-dx_dx2_sqr_on2_x1_comp_y_1 = g1y_x_x2.^2;
-dx_dx2_sqr_on2_x1_comp_y_2 = g1y_x_x2.*g2y_x_x2;
-dx_dx2_sqr_on2_x1_comp_y_3 = g2y_x_x2.^2;
 
 
