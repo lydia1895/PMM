@@ -27,7 +27,7 @@ n_lambda_extra_perturb = 1;
 Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
 
-Ntheta_eig = 1;
+Ntheta_eig = 2;
 n_theta_extra_perturb = 1;
 Ntheta_perturb = n_theta_extra_perturb * Ntheta_eig;
 half_n_theta = floor((n_theta_extra_perturb-1)/2);
@@ -38,7 +38,7 @@ Nphi_perturb = n_phi_extra_perturb * Nphi_eig;
 half_n_phi = floor((n_phi_extra_perturb-1)/2);
 
 lmin = 1200;
-lmax = 1220;
+lmax = 1200;
 
 %dlambda_eig = (lmax-lmin)/(Nlambda_eig-1);
 %dlambda_perturb = (lmax-lmin)/n_lambda_extra_perturb;
@@ -47,7 +47,7 @@ lambda = linspace(lmin,lmax,Nlambda_perturb);
 
 
 tmin = 50*pi/180;
-tmax = 55*pi/180;
+tmax = 53*pi/180;
 
 theta = linspace(tmin,tmax,Ntheta_perturb);
 phi = 45*pi/180;
@@ -186,7 +186,7 @@ load('ellipse_plasmonic.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'p
     'n_points', 'eta', 'f1', 'verbose')
 %}
 %calculate reflection and transmission
-[Rsum_p,Tsum_p, M, gammaminus_p] = ...
+[Rsum,Tsum, matrix_Au_layer, eigenvalues_Au_layer] = ...
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
     h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
     b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
@@ -194,23 +194,85 @@ load('ellipse_plasmonic.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'p
     Nlambda_eig, Nlambda_perturb, half_n_lambda, n_lambda_extra_perturb,...
     Ntheta_eig,  Ntheta_perturb,  half_n_theta,  n_theta_extra_perturb,...
     Nphi_eig,    Nphi_perturb,    half_n_phi,    n_phi_extra_perturb);
+
+
+[nx,Nx,N_total_x,N_total_x3] = PMM_number_of_basis_functions(N_intervals_x,N_basis_x);
+[ny,Ny,N_total_y,N_total_y3] = PMM_number_of_basis_functions(N_intervals_y,N_basis_y);
+N_total_3 = N_total_x3*N_total_y3;
+
+difference_matrix_50_53_deg(:,:) = abs(matrix_Au_layer(1,1,:,:)-matrix_Au_layer(1,2,:,:));
+relative_difference_matrix_50_53_deg = zeros(2*N_total_3,2*N_total_3);
+for i=1:2*N_total_3
+    for j=1:2*N_total_3
+        if (matrix_Au_layer(1,1,i,j)~=0)
+            relative_difference_matrix_50_53_deg(i,j) =...
+                difference_matrix_50_53_deg(i,j)/abs(matrix_Au_layer(1,1,i,j));
+        end
+    end
+end
+matrix_50_deg_Au_layer = matrix_Au_layer(1,1,:,:);
+matrix_53_deg_Au_layer = matrix_Au_layer(1,2,:,:);
+max_matrix_50_deg = max(matrix_50_deg_Au_layer(:))
+max_matrix_53_deg = max(matrix_53_deg_Au_layer(:))
+max_diff_matrix_50_53_deg = max(difference_matrix_50_53_deg(:))
+max_relative_diff_matrix_50_53_deg = max(relative_difference_matrix_50_53_deg(:))
+
+eigenvalues_Au_layer_50_deg = (eigenvalues_Au_layer(1,1,:));
+eigenvalues_Au_layer_53_deg = (eigenvalues_Au_layer(1,2,:));
+diff_eigenvalues_Au_layer_50_53_deg = abs(eigenvalues_Au_layer_50_deg - eigenvalues_Au_layer_53_deg);
+max_diff_eigenvalues_Au_layer_50_53_deg = max(diff_eigenvalues_Au_layer_50_53_deg(:))
+relative_diff_eigenvalues_Au_layer_50_53_deg = diff_eigenvalues_Au_layer_50_53_deg./abs(eigenvalues_Au_layer_50_deg);
+max_relative_diff_eigenvalues_Au_layer_50_53_deg = max(relative_diff_eigenvalues_Au_layer_50_53_deg(:))
+%reflection_1200_nm = Rsum(1);
+%reflection_1220_nm = Rsum(2);
+save('matrix_difference_for_theta_50_53_deg.mat','max_matrix_50_deg','max_matrix_53_deg',...
+    'eigenvalues_Au_layer_50_deg','eigenvalues_Au_layer_53_deg','max_diff_eigenvalues_Au_layer_50_53_deg');
+%{
+    difference_matrix_1200_1220_nm(:,:) = abs(matrix_Au_layer(1,1,:,:)-matrix_Au_layer(2,1,:,:));
+relative_difference_matrix_1200_1220_nm = zeros(2*N_total_3,2*N_total_3);
+for i=1:2*N_total_3
+    for j=1:2*N_total_3
+        if (matrix_Au_layer(1,1,i,j)~=0)
+            relative_difference_matrix_1200_1220_nm(i,j) =...
+                difference_matrix_1200_1220_nm(i,j)/abs(matrix_Au_layer(1,1,i,j));
+        end
+    end
+end
+matrix_1200_nm_Au_layer = matrix_Au_layer(1,1,:,:);
+matrix_1220_nm_Au_layer = matrix_Au_layer(2,1,:,:);
+max_matrix_1200_nm = max(matrix_1200_nm_Au_layer(:))
+max_matrix_1220_nm = max(matrix_1220_nm_Au_layer(:))
+max_diff_matrix_1200_1220_nm = max(difference_matrix_1200_1220_nm(:))
+max_relative_diff_matrix_1200_1220_nm = max(relative_difference_matrix_1200_1220_nm(:))
+
+eigenvalues_Au_layer_1200_nm = (eigenvalues_Au_layer(1,1,:));
+eigenvalues_Au_layer_1220_nm = (eigenvalues_Au_layer(2,1,:));
+diff_eigenvalues_Au_layer_1200_1220_nm = abs(eigenvalues_Au_layer_1200_nm - eigenvalues_Au_layer_1220_nm);
+max_diff_eigenvalues_Au_layer_1200_1220_nm = max(diff_eigenvalues_Au_layer_1200_1220_nm(:))
+relative_diff_eigenvalues_Au_layer_1200_1220_nm = diff_eigenvalues_Au_layer_1200_1220_nm./abs(eigenvalues_Au_layer_1200_nm);
+max_relative_diff_eigenvalues_Au_layer_1200_1220_nm = max(relative_diff_eigenvalues_Au_layer_1200_1220_nm(:))
+reflection_1200_nm = Rsum(1);
+reflection_1220_nm = Rsum(2);
+%}
+save('matrix_difference_for_theta_50_53_deg.mat','max_matrix_50_deg','max_matrix_53_deg',...
+    'eigenvalues_Au_layer_50_deg','eigenvalues_Au_layer_53_deg','max_diff_eigenvalues_Au_layer_50_53_deg');
 %{
 for i=1:L
     gammaminus(:,i)= sort(gammaminus(:,i));
 end
-    %}
-    load('ellipse_plasmonic_no_perturb_output.mat','Rsum','Tsum','theta');
-    %load('ellipse_plasmonic_perturb_1order_output.mat','Rsum_p','Tsum_p', 'gammaminus_p')
-    diff_R = abs((Rsum-Rsum_p)./Rsum);
-    diff_theta = abs(theta - theta_p);
-    
-    
-    
-    %load('ellipse_plasmonic_output.mat','Rsum_ellipses','Tsum_ellipses',...
-    %    'M', 'gammaminus');
-    %difference_R_sum = abs(Rsum_1_4-Rsum);
-    %difference_T_sum = abs(Tsum_1_4-Tsum);
-    %{
+%}
+%load('ellipse_plasmonic_no_perturb_output.mat','Rsum','Tsum','theta');
+%load('ellipse_plasmonic_perturb_1order_output.mat','Rsum_p','Tsum_p', 'gammaminus_p')
+%diff_R = abs((Rsum-Rsum_p)./Rsum);
+%diff_theta = abs(theta - theta_p);
+
+
+
+%load('ellipse_plasmonic_output.mat','Rsum_ellipses','Tsum_ellipses',...
+%    'M', 'gammaminus');
+%difference_R_sum = abs(Rsum_1_4-Rsum);
+%difference_T_sum = abs(Tsum_1_4-Tsum);
+%{
 [l, ll] = size(lambda)
 [t,tt] = size(theta)
 [r,rr] = size(Rsum_ellipses)
@@ -227,21 +289,21 @@ ylabel('theta');
 shading flat
 caxis([0 1])
 colorbar
-    %}
-    figure(4);
-    pcolor(lambda/1000,theta*180/pi,transpose(Rsum_p))
-    
-    xlabel('lambda for R');
-    ylabel('theta');
-    shading flat
-    caxis([0 1])
-    colorbar
-    hold off
-    %}
-    %{
+%}
+figure(4);
+pcolor(lambda/1000,theta*180/pi,transpose(Rsum_p))
+
+xlabel('lambda for R');
+ylabel('theta');
+shading flat
+caxis([0 1])
+colorbar
+hold off
+%}
+%{
 figure(1)
 plot(lambda, Rsum_ellipses, 'r', 'Linewidth', 2);
 %plot(lambda, transpose(Rsum), 'r', 'Linewidth', 2);
 hold off
-    %}
-    
+%}
+

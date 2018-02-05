@@ -1,5 +1,5 @@
 
-function [Rsum,Tsum, M, gammaminus] =...
+function [Rsum,Tsum, M_eig_Au_layer, gammasqr_Au_layer] =...
     PMM_main_function(figure_shape, dispersion, lambda_full, theta_full, phi_full, delta,...
     h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
     b_x, b_y, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y, ellipse_parameters,...
@@ -59,16 +59,19 @@ if strcmp (figure_shape,'ellipse')==1
     end
     
     
+    %2D surface fit - last working
+    
     [int_g, int_for_ellipse] =...
         PMM_metric_integral_polyfit_matrices(N_basis_x,N_basis_y,Nx,nx,Ny,ny,...
         N_intervals_x,N_intervals_y,n_points,La,ax,ay,hx,hy,dx_x1,dx_x2,dy_x1,dy_x2,uni,b_x1,b_x2);
-    
+    %{
      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%test
-    [int_Ex_g_down_12_1D,int_Ey_g_down_12_1D,int_Ey_g_down_11_1D,int_Ex_g_down_22_1D] =...
+    [int_g, int_for_ellipse] =...
     ellipse_coordinates_and_derivatives_for_1D_polyfit(ellipse_parameters,n_points,...
     La,Nx,nx,N_basis_x,ax,Ny,ny,N_basis_y,ay,N_total_3);
+        %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
-
+%{
     int_Ex_g_down21_full = int_g(:,:,7);
     int_Ey_g_down12_full = int_g(:,:,6);
     int_Ey_g_down11_full = int_g(:,:,8);
@@ -85,7 +88,7 @@ if strcmp (figure_shape,'ellipse')==1
     Ey_1D = int_Ex_g_down_22_1D(I(numbers(i)),numbers(i))
     Ey_old = int_Ex_g_down22_full(I(numbers(i)),numbers(i))
     end
-    
+    %}
     %{
     m = max(int_Ex_g_down21_full(:))
     m1 = max(int_Ex_g_down_12_1D(:))
@@ -170,6 +173,9 @@ H_perturb = zeros(2*N_total_3,2*N_total_3,L);
 gammasqr_perturb = zeros(2*N_total_3,2*N_total_3,L);
 L_EH_perturb = zeros(2*N_total_3,2*N_total_3,L);
 
+M_eig_Au_layer=zeros(Nlambda_eig,Ntheta_eig,2*N_total_3,2*N_total_3);
+gammasqr_Au_layer=zeros(Nlambda_eig,Ntheta_eig,2*N_total_3);
+
 n1 = refIndices(1);
 for i_lambda_eig=1:Nlambda_eig
     for j_theta_eig=1:Ntheta_eig
@@ -237,7 +243,7 @@ for i_lambda_eig=1:Nlambda_eig
                 [H_eig(:,:,nlayer),gammasqr_eig(:,:,nlayer)] = PMM_eig_for_Maxwell(Lfull_eig(:,:,nlayer));
                 
             end
-            
+            M_eig_Au_layer(i_lambda_eig,j_theta_eig,:,:) = Lfull_eig(:,:,2);
             
             
             
@@ -283,6 +289,7 @@ for i_lambda_eig=1:Nlambda_eig
                             H_perturb(:,:,nlayer) = H_eig(:,:,nlayer);
                             gammasqr_perturb(:,:,nlayer) = gammasqr_eig(:,:,nlayer);
                         end
+                        gammasqr_Au_layer(i_lambda_eig,j_theta_eig,:) = diag(gammasqr_perturb(:,:,2));
                     else
                         title = 'else'
                         for nlayer=1:L

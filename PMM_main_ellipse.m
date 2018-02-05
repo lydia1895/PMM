@@ -27,8 +27,8 @@ n_lambda_extra_perturb = 1;
 Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
 
-Ntheta_eig = 3;
-n_theta_extra_perturb = 3;
+Ntheta_eig = 10;
+n_theta_extra_perturb = 1;
 Ntheta_perturb = n_theta_extra_perturb * Ntheta_eig;
 half_n_theta = floor((n_theta_extra_perturb-1)/2);
 
@@ -37,7 +37,7 @@ n_phi_extra_perturb = 1;
 Nphi_perturb = n_phi_extra_perturb * Nphi_eig;
 half_n_phi = floor((n_phi_extra_perturb-1)/2);
 
-theta = linspace(0,2,Ntheta_perturb)*pi/180;
+theta = linspace(0,89,Ntheta_perturb)*pi/180;
 
 phi = 0*pi/180;
 
@@ -73,7 +73,7 @@ periody = b_x2(NNxx2)-b_x2(1);
 %delta is the angle between E and the incidence plane
 %delta = 0 TM, delta = pi/2 TE
 
-delta = pi/2;
+delta = 0;
 
 
 refIndices = [1.0 2.0];
