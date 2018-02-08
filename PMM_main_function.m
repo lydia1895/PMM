@@ -37,8 +37,16 @@ end
 if (verbose>5)
     title = 'enter derivatives'
 end
+%for any Gegenbauer polynomial
+%{
 [Dx, hx] = PMM_new_derivatives(La, N_intervals_x, N_basis_x, nx, Nx, ax, b_x1);
 [Dy, hy] = PMM_new_derivatives(La, N_intervals_y, N_basis_y, ny, Ny, ay, b_x2);
+%}
+%for Legendre polynomial
+[Dx, hx] = PMM_Legendre_derivatives(La, N_intervals_x, N_basis_x, nx, Nx, ax, b_x1);
+[Dy, hy] = PMM_Legendre_derivatives(La, N_intervals_y, N_basis_y, ny, Ny, ay, b_x2);
+
+
 if (verbose>5)
     title = 'escape derivatives'
 end
@@ -64,7 +72,7 @@ if strcmp (figure_shape,'ellipse')==1
     [int_g, int_for_ellipse] =...
         PMM_metric_integral_polyfit_matrices(N_basis_x,N_basis_y,Nx,nx,Ny,ny,...
         N_intervals_x,N_intervals_y,n_points,La,ax,ay,hx,hy,dx_x1,dx_x2,dy_x1,dy_x2,uni,b_x1,b_x2);
-    %{
+    %}
      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%test
      %1D polyfit
      [int_g_1D, int_for_ellipse_1D] =...
