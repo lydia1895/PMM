@@ -2,6 +2,7 @@ function [matrix_dy_dx2_sqr_for_Ex,ellipse_matrix_dy_dx2_sqr_for_Ex]=...
     dy_dx2_sqr(gx_y_x2,...
     N_total_3, Ux,Tx,aTx,Uy,Ty,aTy,ksi)
 
+
 dy_dx2_sqr_comp_x = gx_y_x2.^2;
 matrix_dy_dx2_sqr_for_Ex = zeros(N_total_3,N_total_3);
 for num_x = 1:3
