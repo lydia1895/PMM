@@ -7,7 +7,7 @@ allPlots = findall(0, 'Type', 'figure', 'FileName', []);
 delete(allPlots);
 
 verbose = 8;
-
+tic;
 format long
 eta=0;
 f1=0;
@@ -23,12 +23,12 @@ lamnkSiO2 = MatParam_nk_SiO2_interpExportData;
 lamnkZep = MatParam_nk_Zep520A_interpExportData;
 
 Nlambda_eig = 1;
-n_lambda_extra_perturb = 3;
+n_lambda_extra_perturb = 1;
 Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
 
 Ntheta_eig = 1;
-n_theta_extra_perturb = 1;
+n_theta_extra_perturb = 5;
 Ntheta_perturb = n_theta_extra_perturb * Ntheta_eig;
 half_n_theta = floor((n_theta_extra_perturb-1)/2);
 
@@ -38,7 +38,7 @@ Nphi_perturb = n_phi_extra_perturb * Nphi_eig;
 half_n_phi = floor((n_phi_extra_perturb-1)/2);
 
 lmin = 1200;
-lmax = 1204;
+lmax = 1220;
 
 %dlambda_eig = (lmax-lmin)/(Nlambda_eig-1);
 %dlambda_perturb = (lmax-lmin)/n_lambda_extra_perturb;
@@ -47,7 +47,7 @@ lambda = linspace(lmin,lmax,Nlambda_perturb);
 
 
 tmin = 50*pi/180;
-tmax = 50*pi/180;
+tmax = 55*pi/180;
 
 theta = linspace(tmin,tmax,Ntheta_perturb);
 phi = 45*pi/180;
@@ -186,7 +186,9 @@ load('ellipse_plasmonic.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'p
     'n_points', 'eta', 'f1', 'verbose')
 %}
 %calculate reflection and transmission
-[Rsum_p,Tsum_p, matrix_Au_layer, eigenvalues_Au_layer] = ...
+
+[Rsum,Tsum, matrix_Au_layer, gamma_num,...
+    H_sorted,gammasqr_sorted] = ...
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
     h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
     b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
@@ -194,13 +196,62 @@ load('ellipse_plasmonic.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'p
     Nlambda_eig, Nlambda_perturb, half_n_lambda, n_lambda_extra_perturb,...
     Ntheta_eig,  Ntheta_perturb,  half_n_theta,  n_theta_extra_perturb,...
     Nphi_eig,    Nphi_perturb,    half_n_phi,    n_phi_extra_perturb);
-load('ellipse_plasmonic_no_perturb_output.mat','Rsum','Tsum','lambda','theta');
 
-diff_R = abs((Rsum-Rsum_p)./Rsum);
-%{
+if (n_lambda_extra_perturb == 1)&&(n_theta_extra_perturb == 1)
+    Rsum_nonperturbed=Rsum;
+    gamma_num_nonperturbed = gamma_num;
+    H_nonperturbed_sorted= H_sorted;
+    gammasqr_nonperturbed_sorted = gammasqr_sorted;
+else
+    Rsum_perturbed=Rsum;
+    gamma_num_perturbed = gamma_num;
+    H_perturbed_sorted= H_sorted;
+    gammasqr_perturbed_sorted = gammasqr_sorted;
+end
+
+
+%eig_max = max(eigenvalues_Au_layer);
+save('eig_max_nonperturbed.mat', 'gamma_num_nonperturbed',...
+    'Rsum_nonperturbed','H_nonperturbed_1_sorted_full','gammasqr_nonperturb_1_sorted');
+
 [nx,Nx,N_total_x,N_total_x3] = PMM_number_of_basis_functions(N_intervals_x,N_basis_x);
 [ny,Ny,N_total_y,N_total_y3] = PMM_number_of_basis_functions(N_intervals_y,N_basis_y);
 N_total_3 = N_total_x3*N_total_y3;
+
+%{
+H_perturb_1_sorted_full(i_lambda_perturb,j_theta_perturb,:,:) = H_perturb_1_sorted;
+gammasqr_1_sorted_full(i_lambda_perturb,j_theta_perturb,:) = gammasqr_1;
+%}
+
+for j_theta = 1:Ntheta_perturb
+    for number_eig = 1:2*N_total_3
+        difference_H(j_theta,number_eig) =...
+            norm(H_perturbed_sorted(1,j_theta,:,number_eig)-...
+            H_nonperturbed_sorted(1,j_theta,:,number_eig));
+        difference_H_norm(j_theta,number_eig) =...
+            difference_H(j_theta,number_eig)/...
+            norm(H_nonperturbed_sorted(1,j_theta,:,number_eig));
+        
+        difference_eigenvalue(j_theta,number_eig) =...
+            abs(gammasqr_perturbed_sorted(1,j_theta,number_eig)-...
+            gammasqr_nonperturbed_sorted(1,j_theta,number_eig));
+        difference_eigenvalue_norm(j_theta,number_eig) =...
+            difference_eigenvalue(j_theta,number_eig)/...
+            abs(gammasqr_nonperturbed_sorted(1,j_theta,number_eig));
+            
+    end
+    [difference_H_max(j_theta),num_diff_H(j_theta)] = max(difference_H(j_theta,:));
+    eigenvalue_for_max_diff_H = gammasqr_nonperurbed_sorted(num_diff_H(j_theta))
+end
+
+save('difference_for_theta.mat','theta','difference_H','difference_H_norm',
+'difference_eigenvalue','difference_eigenvalue_norm');
+
+
+%difference = abs(gamma_num_perturbed-gamma_num)./abs(gamma_num);
+
+%{
+
 
 difference_matrix_50_53_deg(:,:) = abs(matrix_Au_layer(1,1,:,:)-matrix_Au_layer(1,2,:,:));
 relative_difference_matrix_50_53_deg = zeros(2*N_total_3,2*N_total_3);
@@ -212,7 +263,6 @@ for i=1:2*N_total_3
         end
     end
 end
-
 matrix_50_deg_Au_layer = matrix_Au_layer(1,1,:,:);
 matrix_53_deg_Au_layer = matrix_Au_layer(1,2,:,:);
 max_matrix_50_deg = max(matrix_50_deg_Au_layer(:))
@@ -230,7 +280,7 @@ max_relative_diff_eigenvalues_Au_layer_50_53_deg = max(relative_diff_eigenvalues
 %reflection_1220_nm = Rsum(2);
 save('matrix_difference_for_theta_50_53_deg.mat','max_matrix_50_deg','max_matrix_53_deg',...
     'eigenvalues_Au_layer_50_deg','eigenvalues_Au_layer_53_deg','max_diff_eigenvalues_Au_layer_50_53_deg');
-%}
+    %}
 %{
     difference_matrix_1200_1220_nm(:,:) = abs(matrix_Au_layer(1,1,:,:)-matrix_Au_layer(2,1,:,:));
 relative_difference_matrix_1200_1220_nm = zeros(2*N_total_3,2*N_total_3);
@@ -258,15 +308,18 @@ max_relative_diff_eigenvalues_Au_layer_1200_1220_nm = max(relative_diff_eigenval
 reflection_1200_nm = Rsum(1);
 reflection_1220_nm = Rsum(2);
 %}
-
-%{
+    %{
+save('matrix_difference_for_theta_50_53_deg.mat','max_matrix_50_deg','max_matrix_53_deg',...
+    'eigenvalues_Au_layer_50_deg','eigenvalues_Au_layer_53_deg','max_diff_eigenvalues_Au_layer_50_53_deg');
+%}
+    %{
 for i=1:L
     gammaminus(:,i)= sort(gammaminus(:,i));
 end
 %}
 %load('ellipse_plasmonic_no_perturb_output.mat','Rsum','Tsum','theta');
 %load('ellipse_plasmonic_perturb_1order_output.mat','Rsum_p','Tsum_p', 'gammaminus_p')
-
+%diff_R = abs((Rsum-Rsum_p)./Rsum);
 %diff_theta = abs(theta - theta_p);
 
 
@@ -293,6 +346,7 @@ shading flat
 caxis([0 1])
 colorbar
 %}
+%{
 figure(4);
 pcolor(lambda/1000,theta*180/pi,transpose(Rsum_p))
 
@@ -303,10 +357,11 @@ caxis([0 1])
 colorbar
 hold off
 %}
-%{
+toc
+
 figure(1)
-plot(lambda, Rsum_ellipses, 'r', 'Linewidth', 2);
+plot(lambda, Rsum, 'r', 'Linewidth', 2);
 %plot(lambda, transpose(Rsum), 'r', 'Linewidth', 2);
 hold off
-%}
+
 

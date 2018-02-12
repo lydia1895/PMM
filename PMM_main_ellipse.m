@@ -22,12 +22,12 @@ lambda = 2*pi;
 %theta = linspace(26.5,26.9,10)*pi/180;
 %theta = linspace(0,26.85,2)*pi/180;
 
-Nlambda_eig = 1;
+Nlambda_eig = 3;
 n_lambda_extra_perturb = 1;
 Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
 
-Ntheta_eig = 10;
+Ntheta_eig = 1;
 n_theta_extra_perturb = 1;
 Ntheta_perturb = n_theta_extra_perturb * Ntheta_eig;
 half_n_theta = floor((n_theta_extra_perturb-1)/2);
