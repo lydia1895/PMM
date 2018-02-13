@@ -38,7 +38,7 @@ Nphi_perturb = n_phi_extra_perturb * Nphi_eig;
 half_n_phi = floor((n_phi_extra_perturb-1)/2);
 
 lmin = 1200;
-lmax = 1220;
+lmax = 1200;
 
 %dlambda_eig = (lmax-lmin)/(Nlambda_eig-1);
 %dlambda_perturb = (lmax-lmin)/n_lambda_extra_perturb;
@@ -47,7 +47,7 @@ lambda = linspace(lmin,lmax,Nlambda_perturb);
 
 
 tmin = 50*pi/180;
-tmax = 55*pi/180;
+tmax = 54*pi/180;
 
 theta = linspace(tmin,tmax,Ntheta_perturb);
 phi = 45*pi/180;
@@ -211,8 +211,8 @@ end
 
 
 %eig_max = max(eigenvalues_Au_layer);
-save('eig_max_nonperturbed.mat', 'gamma_num_nonperturbed',...
-    'Rsum_nonperturbed','H_nonperturbed_1_sorted_full','gammasqr_nonperturb_1_sorted');
+load('eig_nonperturbed.mat', 'lambda','theta','gamma_num_nonperturbed',...
+    'Rsum_nonperturbed','H_nonperturbed_sorted','gammasqr_nonperturbed_sorted');
 
 [nx,Nx,N_total_x,N_total_x3] = PMM_number_of_basis_functions(N_intervals_x,N_basis_x);
 [ny,Ny,N_total_y,N_total_y3] = PMM_number_of_basis_functions(N_intervals_y,N_basis_y);
@@ -223,14 +223,22 @@ H_perturb_1_sorted_full(i_lambda_perturb,j_theta_perturb,:,:) = H_perturb_1_sort
 gammasqr_1_sorted_full(i_lambda_perturb,j_theta_perturb,:) = gammasqr_1;
 %}
 
+difference_H = zeros(Ntheta_perturb,2*N_total_3);
+difference_H_norm = zeros(Ntheta_perturb,2*N_total_3);
+difference_eigenvalue = zeros(Ntheta_perturb,2*N_total_3);
+difference_eigenvalue_norm = zeros(Ntheta_perturb,2*N_total_3);
+eigenvector_nonperturb_for_max_diff_H = zeros(2*N_total_3,Ntheta_perturb);
+
 for j_theta = 1:Ntheta_perturb
     for number_eig = 1:2*N_total_3
-        difference_H(j_theta,number_eig) =...
-            norm(H_perturbed_sorted(1,j_theta,:,number_eig)-...
-            H_nonperturbed_sorted(1,j_theta,:,number_eig));
+        difference(:,1)=H_perturbed_sorted(1,j_theta,:,number_eig)-...
+            H_nonperturbed_sorted(1,j_theta,:,number_eig);
+        H_nonperturbed_current(:,1) = H_nonperturbed_sorted(1,j_theta,:,number_eig);
+        
+        difference_H(j_theta,number_eig) = norm(difference);
         difference_H_norm(j_theta,number_eig) =...
             difference_H(j_theta,number_eig)/...
-            norm(H_nonperturbed_sorted(1,j_theta,:,number_eig));
+            norm(H_nonperturbed_current);
         
         difference_eigenvalue(j_theta,number_eig) =...
             abs(gammasqr_perturbed_sorted(1,j_theta,number_eig)-...
@@ -238,14 +246,40 @@ for j_theta = 1:Ntheta_perturb
         difference_eigenvalue_norm(j_theta,number_eig) =...
             difference_eigenvalue(j_theta,number_eig)/...
             abs(gammasqr_nonperturbed_sorted(1,j_theta,number_eig));
-            
+        
     end
     [difference_H_max(j_theta),num_diff_H(j_theta)] = max(difference_H(j_theta,:));
-    eigenvalue_for_max_diff_H = gammasqr_nonperurbed_sorted(num_diff_H(j_theta))
+    eigenvalue_for_max_diff_H(j_theta) = gammasqr_nonperturbed_sorted(num_diff_H(j_theta));
+    
+    eigenvector_nonperturb_for_max_diff_H(:,j_theta) =...
+        H_nonperturbed_sorted(1,j_theta,:,num_diff_H(j_theta));
+    
+    eigenvector_perturb_for_max_diff_H(:,j_theta) = H_perturbed_sorted(1,j_theta,:,num_diff_H(j_theta));
+    
+    [difference_H_max_norm(j_theta),num_diff_H_norm(j_theta)] = max(difference_H_norm(j_theta,:));
+    eigenvalue_for_max_diff_H_norm(j_theta) = gammasqr_nonperturbed_sorted(num_diff_H_norm(j_theta));
+    
+    eigenvector_nonperturbed_for_max_diff_H_norm(:,j_theta) =...
+        H_nonperturbed_sorted(1,j_theta,:,num_diff_H_norm(j_theta));
+    
+    [difference_eigenvalue_max(j_theta),num_diff_eigval(j_theta)] = max(difference_eigenvalue(j_theta,:));
+    eigenvalue_for_max_diff_eigval(j_theta) =...
+        gammasqr_nonperturbed_sorted(1,j_theta,num_diff_eigval(j_theta));
 end
 
-save('difference_for_theta.mat','theta','difference_H','difference_H_norm',
-'difference_eigenvalue','difference_eigenvalue_norm');
+theta_deg = theta*180/pi;
+for j_theta = 1:Ntheta_perturb
+    for number_eig = 1:2*N_total_3
+        Hc(:,1) = H_perturbed_sorted(1,j_theta,:,number_eig);
+        Hperturbed_norm(j_theta,number_eig)=norm(Hc);
+    end
+end
+save('difference_for_theta.mat','theta_deg','difference_H','difference_H_norm',...
+'difference_eigenvalue','difference_eigenvalue_norm',...
+'difference_H_max','eigenvalue_for_max_diff_H',...
+'eigenvector_nonperturb_for_max_diff_H','eigenvector_perturb_for_max_diff_H',...
+'difference_H_max_norm','eigenvalue_for_max_diff_H_norm',...
+'difference_eigenvalue_max','eigenvalue_for_max_diff_eigval','Hperturbed_norm');
 
 
 %difference = abs(gamma_num_perturbed-gamma_num)./abs(gamma_num);
