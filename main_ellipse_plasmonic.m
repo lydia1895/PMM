@@ -22,12 +22,12 @@ lamnkZnSe = MatParam_nk_ZnSe_interpExportData;
 lamnkSiO2 = MatParam_nk_SiO2_interpExportData;
 lamnkZep = MatParam_nk_Zep520A_interpExportData;
 
-Nlambda_eig = 1;
-n_lambda_extra_perturb = 3;
+Nlambda_eig = 50;
+n_lambda_extra_perturb = 1;
 Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
 
-Ntheta_eig = 1;
+Ntheta_eig = 50;
 n_theta_extra_perturb = 1;
 Ntheta_perturb = n_theta_extra_perturb * Ntheta_eig;
 half_n_theta = floor((n_theta_extra_perturb-1)/2);
@@ -37,8 +37,8 @@ n_phi_extra_perturb = 1;
 Nphi_perturb = n_phi_extra_perturb * Nphi_eig;
 half_n_phi = floor((n_phi_extra_perturb-1)/2);
 
-lmin = 1200;
-lmax = 1204;
+lmin = 600;
+lmax = 1700;
 
 %dlambda_eig = (lmax-lmin)/(Nlambda_eig-1);
 %dlambda_perturb = (lmax-lmin)/n_lambda_extra_perturb;
@@ -46,8 +46,8 @@ lmax = 1204;
 lambda = linspace(lmin,lmax,Nlambda_perturb);
 
 
-tmin = 50*pi/180;
-tmax = 50*pi/180;
+tmin = 0*pi/180;
+tmax = 85*pi/180;
 
 theta = linspace(tmin,tmax,Ntheta_perturb);
 phi = 45*pi/180;
@@ -186,7 +186,7 @@ load('ellipse_plasmonic.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'p
     'n_points', 'eta', 'f1', 'verbose')
 %}
 %calculate reflection and transmission
-[Rsum_p,Tsum_p, matrix_Au_layer, eigenvalues_Au_layer] = ...
+[R,T] = ...
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
     h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
     b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
@@ -194,9 +194,9 @@ load('ellipse_plasmonic.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'p
     Nlambda_eig, Nlambda_perturb, half_n_lambda, n_lambda_extra_perturb,...
     Ntheta_eig,  Ntheta_perturb,  half_n_theta,  n_theta_extra_perturb,...
     Nphi_eig,    Nphi_perturb,    half_n_phi,    n_phi_extra_perturb);
-load('ellipse_plasmonic_no_perturb_output.mat','Rsum','Tsum','lambda','theta');
+%load('ellipse_plasmonic_no_perturb_output.mat','Rsum','Tsum','lambda','theta');
 
-diff_R = abs((Rsum-Rsum_p)./Rsum);
+%diff_R = abs((Rsum-Rsum_p)./Rsum);
 %{
 [nx,Nx,N_total_x,N_total_x3] = PMM_number_of_basis_functions(N_intervals_x,N_basis_x);
 [ny,Ny,N_total_y,N_total_y3] = PMM_number_of_basis_functions(N_intervals_y,N_basis_y);
@@ -282,10 +282,7 @@ end
 n_lambda_theta = 100;
 tl = linspace (lmin,lmax,n_lambda_theta)/1000;
 tt = linspace(tmin,tmax,n_lambda_theta);
-[XI,YI] = meshgrid(tl,tt);
-ZI = griddata(lambda/1000,theta,transpose(Rsum_ellipses),XI,YI);
-figure(1);
-pcolor(XI,YI*180/pi,ZI)
+
 
 xlabel('lambda for R');
 ylabel('theta');
@@ -293,14 +290,22 @@ shading flat
 caxis([0 1])
 colorbar
 %}
-figure(4);
-pcolor(lambda/1000,theta*180/pi,transpose(Rsum_p))
 
-xlabel('lambda for R');
-ylabel('theta');
+n_lambda_theta = 100;
+tl = linspace (lmin,lmax,n_lambda_theta);
+tt = linspace(tmin,tmax,n_lambda_theta);
+[XI,YI] = meshgrid(tl,tt);
+ZI = griddata(lambda,theta,transpose(R),XI,YI);
+figure(1);
+pcolor(XI,YI*180/pi,ZI)
+set(gca,'fontsize',18);
+title('Reflection','fontsize',18);
+xlabel('wavelength, nm','fontsize',18);
+ylabel('theta, deg','fontsize',18);
 shading flat
 caxis([0 1])
 colorbar
+colormap(jet)
 hold off
 %}
 %{
