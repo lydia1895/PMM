@@ -208,8 +208,9 @@ else
     H_perturbed_sorted= H_sorted;
     gammasqr_perturbed_sorted = gammasqr_sorted;
 end
-
-
+%save('eig_nonpeturbed.mat','H_nonperturbed_sorted','gammasqr_nonperturbed_sorted');
+save('eig_peturbed.mat','H_perturbed_sorted','gammasqr_perturbed_sorted');
+%{
 %eig_max = max(eigenvalues_Au_layer);
 load('eig_nonperturbed.mat', 'lambda','theta','gamma_num_nonperturbed',...
     'Rsum_nonperturbed','H_nonperturbed_sorted','gammasqr_nonperturbed_sorted');
@@ -304,7 +305,7 @@ save('difference_for_theta.mat','theta_deg','difference_H','difference_H_norm',.
 'difference_eigenvalue_max','eigenvalue_for_max_diff_eigval','H_perturbed_norm',...
 'diff_eig_minus_eig_with_max_H_diff','eig_closest_to_eig_with_max_H_diff',...
 'H_perturbed_norm_sorted','eigenvalues_sorted_respect_to_H_norm');
-
+%}
 
 %difference = abs(gamma_num_perturbed-gamma_num)./abs(gamma_num);
 
