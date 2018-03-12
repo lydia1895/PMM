@@ -22,7 +22,7 @@ lamnkZnSe = MatParam_nk_ZnSe_interpExportData;
 lamnkSiO2 = MatParam_nk_SiO2_interpExportData;
 lamnkZep = MatParam_nk_Zep520A_interpExportData;
 
-Nlambda_eig = 60;
+Nlambda_eig = 150;
 n_lambda_extra_perturb = 1;
 Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
