@@ -21,7 +21,7 @@ n_lambda_extra_perturb = 1;
 Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
 
-Ntheta_eig = 1;
+Ntheta_eig = 26;
 n_theta_extra_perturb = 1;
 Ntheta_perturb = n_theta_extra_perturb * Ntheta_eig;
 half_n_theta = floor((n_theta_extra_perturb-1)/2);
@@ -36,8 +36,8 @@ lmax = 1500;
 lambda = linspace(lmin,lmax,Nlambda_perturb);
 
 
-tmin = 0*pi/180;
-tmax = 0*pi/180;
+tmin = 5*pi/180;
+tmax = 80*pi/180;
 theta = linspace(tmin,tmax,Ntheta_perturb);
 
 phi = 0*pi/180;
@@ -105,7 +105,7 @@ periody = b_x2(NNxx2)-b_x2(1);
 %delta is the angle between E and the incidence plane
 %delta = 0 TM, delta = pi/2 TE
 
-delta = pi/2;
+delta = 0;
 
 refIndices = [n_media n_media];
 
@@ -128,8 +128,8 @@ epsilon(1,1,:) = eps_media;
 epsilon(1,2,:) = eps_media;
 
 h = zeros(L,1);
-%h(4) = 0.0;
-h(3) = 0.0;
+h(4) = 0.0;
+h(3) = 450;
 h(2) = 220;
 h(1) = 0.0;
 
@@ -143,7 +143,7 @@ tau_y = exp(1j*beta_ref*periody);
 
 La = 0.5;
 
-N_FMM = 3;
+N_FMM = 1;
 
 [Rsum,Tsum, matrix_Au_layer, eigenvalues_Au_layer] = ...
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
@@ -154,7 +154,7 @@ N_FMM = 3;
     Ntheta_eig,  Ntheta_perturb,  half_n_theta,  n_theta_extra_perturb,...
     Nphi_eig,    Nphi_perturb,    half_n_phi,    n_phi_extra_perturb);
 
-%save('Huygens_results_prism_TM.mat','lambda','theta','Rsum');
+save('Huygens_results_prism_TM.mat','lambda','theta','Rsum');
 
 %{
 [l, ll] = size(lambda)
@@ -189,10 +189,10 @@ caxis([0 1])
 colorbar
 hold off
 
-%}
+
 figure(1)
-plot(lambda, Tsum, 'r', 'Linewidth', 2);
+plot(lambda, Rsum, 'r', 'Linewidth', 2);
 %plot(lambda, transpose(Rsum), 'r', 'Linewidth', 2);
 hold off
-
+%}
 
