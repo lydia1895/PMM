@@ -16,7 +16,7 @@ Si_dispersion = xlsread('silicon_cryst_500-1500nm.xlsx');
 %%%%%%%%%
 
 
-Nlambda_eig = 21;
+Nlambda_eig = 15;
 n_lambda_extra_perturb = 1;
 Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
@@ -60,9 +60,12 @@ for i=1:Nl
     [ll,num] = min( abs (lambda(i)-Si_lambda(:) ) );
     llambda = lambda(i)
     si_llambda = Si_lambda(num)
-    n_Si(i) = Si_dispersion(num,2) + 1j*Si_dispersion(num,3);
-    eps_Si(i) = Si_dispersion(num,5) + 1j*Si_dispersion(num,6);
+    n_Si(i) = Si_dispersion(num,2); %+ 1j*Si_dispersion(num,3);
+    eps_Si(i) = Si_dispersion(num,5);% + 1j*Si_dispersion(num,6);
 end
+
+%n_Si = 4*ones(Nl,1);
+%eps_Si = n_Si.^2;
 %%%%%%%%%conditions
 
 figure_shape = 'ellipse';
@@ -71,14 +74,14 @@ dispersion = 'yes';
 N_intervals_x = 3;
 N_intervals_y = 3;
 N_b = 6;
-n_points = 150;
+n_points = 1000;
 N_basis_x = N_b*ones(N_intervals_x,1);
 N_basis_y = N_b*ones(N_intervals_y,1);
 
 
 
-R1 = 242;
-R2 = 242;
+R1 = 200;
+R2 = 200;
 P1 = 666;
 P2 = 666;
 Q2 = R2/sqrt(2);
@@ -105,7 +108,7 @@ periody = b_x2(NNxx2)-b_x2(1);
 %delta is the angle between E and the incidence plane
 %delta = 0 TM, delta = pi/2 TE
 
-delta = pi/2;
+delta = 0;
 
 refIndices = [n_media n_media];
 
@@ -191,7 +194,7 @@ hold off
 
 %}
 figure(1)
-plot(lambda, Tsum, 'r', 'Linewidth', 2);
+plot(lambda, Rsum, 'g', lambda, Tsum, 'r', 'Linewidth', 2);
 %plot(lambda, transpose(Rsum), 'r', 'Linewidth', 2);
 hold off
 

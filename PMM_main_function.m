@@ -313,7 +313,7 @@ function [Rsum,Tsum, M_eig_Au_layer, gamma_num,H_perturb_1_sorted_full,gammasqr_
                         if strcmp (dispersion,'no')==1
                             rrefIndices = refIndices;
                         else
-                            rrefIndices = refIndices_lambda;
+                            rrefIndices = refIndices_lambda
                         end
                         
                         [alpha0,beta0,gamma0,k0,Ex0,Ey0] =...
