@@ -307,6 +307,7 @@ save('difference_for_theta.mat','theta_deg','difference_H','difference_H_norm',.
 'H_perturbed_norm_sorted','eigenvalues_sorted_respect_to_H_norm');
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 eigenvectors_perturbed_norms = H_perturbed_norm;
 eigenvalues_nonperturbed_sorted = gammasqr_nonperturbed_sorted_new;
@@ -314,6 +315,9 @@ eigenvalues_perturbed_sorted = gammasqr_perturbed_sorted_new;
 
 save('eigenvectors_norms.mat','eigenvectors_perturbed_norms',...
     'eigenvalues_nonperturbed_sorted','eigenvalues_perturbed_sorted','theta_deg')
+=======
+%}
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
 =======
 %}
 >>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c

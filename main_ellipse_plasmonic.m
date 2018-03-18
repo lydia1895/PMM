@@ -24,7 +24,11 @@ lamnkZep = MatParam_nk_Zep520A_interpExportData;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Nlambda_eig = 50;
+=======
+Nlambda_eig = 60;
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
 =======
 Nlambda_eig = 60;
 >>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
@@ -48,7 +52,11 @@ half_n_phi = floor((n_phi_extra_perturb-1)/2);
 lmin = 600;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 lmax = 1700;
+=======
+lmax = 1400;
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
 =======
 lmax = 1400;
 >>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
@@ -64,8 +72,13 @@ lambda = linspace(lmin,lmax,Nlambda_perturb);
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 tmin = 0*pi/180;
 tmax = 85*pi/180;
+=======
+tmin = 55*pi/180;
+tmax = 55*pi/180;
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
 =======
 tmin = 55*pi/180;
 tmax = 55*pi/180;
@@ -214,7 +227,11 @@ load('ellipse_plasmonic.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'p
 %calculate reflection and transmission
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 [R,T] = ...
+=======
+[Rsum,Tsum, matrix_Au_layer, eigenvalues_Au_layer] = ...
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
 =======
 [Rsum,Tsum, matrix_Au_layer, eigenvalues_Au_layer] = ...
 >>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
@@ -326,7 +343,10 @@ colorbar
 %}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
 =======
 >>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
 %{
