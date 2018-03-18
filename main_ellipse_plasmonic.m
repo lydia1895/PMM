@@ -22,7 +22,15 @@ lamnkZnSe = MatParam_nk_ZnSe_interpExportData;
 lamnkSiO2 = MatParam_nk_SiO2_interpExportData;
 lamnkZep = MatParam_nk_Zep520A_interpExportData;
 
+<<<<<<< HEAD
+<<<<<<< HEAD
 Nlambda_eig = 50;
+=======
+Nlambda_eig = 60;
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
+=======
+Nlambda_eig = 60;
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
 n_lambda_extra_perturb = 1;
 Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
@@ -38,7 +46,15 @@ Nphi_perturb = n_phi_extra_perturb * Nphi_eig;
 half_n_phi = floor((n_phi_extra_perturb-1)/2);
 
 lmin = 600;
+<<<<<<< HEAD
+<<<<<<< HEAD
 lmax = 1700;
+=======
+lmax = 1400;
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
+=======
+lmax = 1400;
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
 
 %dlambda_eig = (lmax-lmin)/(Nlambda_eig-1);
 %dlambda_perturb = (lmax-lmin)/n_lambda_extra_perturb;
@@ -46,8 +62,18 @@ lmax = 1700;
 lambda = linspace(lmin,lmax,Nlambda_perturb);
 
 
+<<<<<<< HEAD
+<<<<<<< HEAD
 tmin = 0*pi/180;
 tmax = 85*pi/180;
+=======
+tmin = 55*pi/180;
+tmax = 55*pi/180;
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
+=======
+tmin = 55*pi/180;
+tmax = 55*pi/180;
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
 
 theta = linspace(tmin,tmax,Ntheta_perturb);
 phi = 45*pi/180;
@@ -186,7 +212,15 @@ load('ellipse_plasmonic.mat','figure_shape', 'dispersion', 'lambda', 'theta', 'p
     'n_points', 'eta', 'f1', 'verbose')
 %}
 %calculate reflection and transmission
+<<<<<<< HEAD
+<<<<<<< HEAD
 [R,T] = ...
+=======
+[Rsum,Tsum, matrix_Au_layer, eigenvalues_Au_layer] = ...
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
+=======
+[Rsum,Tsum, matrix_Au_layer, eigenvalues_Au_layer] = ...
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
     PMM_main_function(figure_shape, dispersion, lambda, theta, phi, delta,...
     h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
     b_x1, b_x2, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y,ellipse_parameters,...
@@ -290,6 +324,15 @@ shading flat
 caxis([0 1])
 colorbar
 %}
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
+%{
+figure(4);
+pcolor(lambda/1000,theta*180/pi,transpose(Rsum_p))
+>>>>>>> c1b42c226c43825d6c5ba0f1cf23c22d3e6f123c
 
 n_lambda_theta = 100;
 tl = linspace (lmin,lmax,n_lambda_theta);
@@ -308,10 +351,10 @@ colorbar
 colormap(jet)
 hold off
 %}
-%{
+
 figure(1)
-plot(lambda, Rsum_ellipses, 'r', 'Linewidth', 2);
+plot(lambda, Rsum, 'r', 'Linewidth', 2);
 %plot(lambda, transpose(Rsum), 'r', 'Linewidth', 2);
 hold off
-%}
+
 

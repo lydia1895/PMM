@@ -275,7 +275,7 @@ function [Rsum,Tsum] =...
                         if strcmp (dispersion,'no')==1
                             rrefIndices = refIndices;
                         else
-                            rrefIndices = refIndices_lambda;
+                            rrefIndices = refIndices_lambda
                         end
                         
                         [alpha0,beta0,gamma0,k0,Ex0,Ey0] =...

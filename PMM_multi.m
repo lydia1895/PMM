@@ -174,6 +174,9 @@ function [eta_R, eta_T, M,...
         if imag(kz2v(i))==0
             eta_T(i) = A2(i,i)*(abs(T2(i)))^2 + B2(i,i)*(abs(T1(i)))^2 +...
                 C2(i,i)*( T1(i)*conj(T2(i))+T2(i)*conj(T1(i)) );
+            B2(i,i)*(abs(T1(i)))^2
+            B2(i,i)
+            (abs(T1(i)))^2
         end
     end
     
