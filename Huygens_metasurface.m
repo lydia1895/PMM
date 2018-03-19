@@ -207,10 +207,10 @@ colorbar
 hold off
 
 
-
+a = P1
 c = physconst('LightSpeed');
 h = 4.135666 * 10^(-15);
-kx = (2*a*n_prism./lambda)'*sin(theta);
+kx = (2*a*n_prism(1)./lambda)'*sin(theta);
 frequency = (c*10^(-3)./lambda');
 
 figure(2);
