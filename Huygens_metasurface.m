@@ -45,17 +45,17 @@ phi = 0*pi/180;
 
 
 Nl = Nlambda_perturb;
-n_Si = zeros(Nl,1);
-eps_Si = zeros(Nl,1);
+%n_Si = zeros(Nl,1);
+%eps_Si = zeros(Nl,1);
 
-n_media = 1.66*ones(Nl,1);
-eps_media = n_media.^2;
+n_media = 1.66%*ones(Nl,1);
+eps_media = n_media^2;
 
-n_prism = 3.5*ones(Nl,1);
-eps_prism = n_prism.^2;
+%n_prism = 3.5%*ones(Nl,1);
+%eps_prism = n_prism^2;
 
 Si_lambda = Si_dispersion(:,1)*1000;
-
+%{
 for i=1:Nl
     [ll,num] = min( abs (lambda(i)-Si_lambda(:) ) );
     llambda = lambda(i)
@@ -63,25 +63,27 @@ for i=1:Nl
     n_Si(i) = Si_dispersion(num,2); %+ 1j*Si_dispersion(num,3);
     eps_Si(i) = Si_dispersion(num,5);% + 1j*Si_dispersion(num,6);
 end
-
+%}
+n_Si = 4.32%Si_dispersion(2,2);
+eps_Si = n_Si^2;
 %n_Si = 4*ones(Nl,1);
 %eps_Si = n_Si.^2;
 %%%%%%%%%conditions
 
 figure_shape = 'ellipse';
-dispersion = 'yes';
+dispersion = 'no';%'yes';
 
 N_intervals_x = 3;
 N_intervals_y = 3;
 N_b = 6;
-n_points = 1000;
+n_points = 500;
 N_basis_x = N_b*ones(N_intervals_x,1);
 N_basis_y = N_b*ones(N_intervals_y,1);
 
 
 
-R1 = 200;
-R2 = 200;
+R1 = 242;
+R2 = 242;
 P1 = 666;
 P2 = 666;
 Q2 = R2/sqrt(2);
@@ -116,7 +118,7 @@ L=3; %number of layers
 %epsilon(iL,1,iNlambda) = eps outside the ellipse
 %epsilon(iL,2,iNlambda) = eps inside the ellipse
 
-epsilon = zeros(L,2,Nl);
+epsilon = zeros(L,2)%,Nl);
 
 %epsilon(4,1,:) = eps_prism;
 %epsilon(4,2,:) = eps_prism;
