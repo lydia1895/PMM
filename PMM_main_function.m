@@ -1,5 +1,5 @@
 
-function [Rsum,Tsum, M_eig_Au_layer, gamma_num,H_perturb_1_sorted_full,gammasqr_1_sorted_full] =...
+function [Rsum,Tsum] =...
         PMM_main_function(figure_shape, dispersion, lambda_full, theta_full, phi_full, delta,...
         h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
         b_x, b_y, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y, ellipse_parameters,...
@@ -82,45 +82,7 @@ function [Rsum,Tsum, M_eig_Au_layer, gamma_num,H_perturb_1_sorted_full,gammasqr_
         int_g = int_g_1D;
         int_for_ellipse = int_for_ellipse_1D;
         
-        %int_g(:,:,5) = int_g_1D(:,:,5); %that's the error
-        %{
-     int_g_5 = int_g(:,:,5);
-     
-     int_g = int_g_1D;
-     int_for_ellipse = int_for_ellipse_1D;
-     
-     int_g(:,:,5) = int_g_5;
-        %}
-        %int_for_ellipse(:,:,5) = int_for_ellipse_1D(:,:,5);
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
-        %{
-    int_Ex_g_down21_full = int_g(:,:,7);
-    int_Ey_g_down12_full = int_g(:,:,6);
-    int_Ey_g_down11_full = int_g(:,:,8);
-    int_Ex_g_down22_full = int_g(:,:,5);
-    
-    m = max(int_Ex_g_down22_full(:))
-    m1 = max(int_Ex_g_down_22_1D(:))
-    %best test
-    Ex_g_down_22_diff = abs(int_Ex_g_down_22_1D - int_Ex_g_down22_full);
-    [Ex_g_down_22_diff_max,I] = max(Ex_g_down_22_diff)
-    numbers = [1 25 50 75 100 125 150 175 200 225]
-    for i =1:10
-    diff = Ex_g_down_22_diff_max(I(numbers(i)))
-    Ey_1D = int_Ex_g_down_22_1D(I(numbers(i)),numbers(i))
-    Ey_old = int_Ex_g_down22_full(I(numbers(i)),numbers(i))
-    end
-        %}
-        %{
-    m = max(int_Ex_g_down21_full(:))
-    m1 = max(int_Ex_g_down_12_1D(:))
-    mnomnom = int_Ex_g_down21_full(2,4)
-    mnomnom1 = int_Ex_g_down_12_1D(2,4)
-    Ex_g_down_12_diff = abs(int_Ex_g_down_12_1D - int_Ex_g_down21_full);
-    [Ex_g_down_12_diff,I] = max(Ex_g_down_12_diff(:))
-    int_Ex_g_down_12_1D(I)
-    int_Ex_g_down21_full(I)
-        %}
+       
     end
     
     if strcmp (figure_shape,'ellipse')==1 && strcmp (dispersion,'no')==1
@@ -194,12 +156,12 @@ function [Rsum,Tsum, M_eig_Au_layer, gamma_num,H_perturb_1_sorted_full,gammasqr_
     H_perturb = zeros(2*N_total_3,2*N_total_3,L);
     gammasqr_perturb = zeros(2*N_total_3,2*N_total_3,L);
     L_EH_perturb = zeros(2*N_total_3,2*N_total_3,L);
-    
+    %{
     M_eig_Au_layer=zeros(Nlambda_eig,Ntheta_eig,2*N_total_3,2*N_total_3);
     gammasqr_Au_layer=zeros(Nlambda_eig,Ntheta_eig,2*N_total_3);
     H_perturb_1_sorted_full=zeros(Nlambda_perturb,Ntheta_perturb,2*N_total_3,2*N_total_3);
     gammasqr_1_sorted_full=zeros(Nlambda_perturb,Ntheta_perturb,2*N_total_3);
-    
+    %}
     current_layer = 2;
     
     n1 = refIndices(1);
@@ -267,8 +229,8 @@ function [Rsum,Tsum, M_eig_Au_layer, gamma_num,H_perturb_1_sorted_full,gammasqr_
                     Lfull_eig(:,:,nlayer) = L_HE_eig(:,:,nlayer)*L_EH_eig(:,:,nlayer);
                     
                     [H_eig(:,:,nlayer),gammasqr_eig(:,:,nlayer)] = PMM_eig_for_Maxwell(Lfull_eig(:,:,nlayer));
-                    
-                    
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%test!
+                    %{
                     gammasqr_1 = diag(gammasqr_eig(:,:,current_layer));
                     H_perturb_1 = H_eig(:,:,current_layer);
                     [gammasqr_1_sorted, index] = sort(gammasqr_1);
@@ -278,9 +240,9 @@ function [Rsum,Tsum, M_eig_Au_layer, gamma_num,H_perturb_1_sorted_full,gammasqr_
                     end
                     H_perturb_1_sorted_full(i_lambda_perturb,j_theta_perturb,:,:) = H_perturb_1_sorted;
                     gammasqr_1_sorted_full(i_lambda_perturb,j_theta_perturb,:) = gammasqr_1;
-                    
+                    %}
                 end
-                M_eig_Au_layer(i_lambda_eig,j_theta_eig,:,:) = Lfull_eig(:,:,2);
+                %M_eig_Au_layer(i_lambda_eig,j_theta_eig,:,:) = Lfull_eig(:,:,2);
                 
                 
                 
@@ -360,6 +322,7 @@ function [Rsum,Tsum, M_eig_Au_layer, gamma_num,H_perturb_1_sorted_full,gammasqr_
                             end
                         end
                         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%test
+                        %{
                         gammasqr_1 = diag(gammasqr_perturb(:,:,current_layer));
                         H_perturb_1 = H_perturb(:,:,current_layer);
                         [gammasqr_1_sorted, index] = sort(gammasqr_1);
@@ -369,7 +332,7 @@ function [Rsum,Tsum, M_eig_Au_layer, gamma_num,H_perturb_1_sorted_full,gammasqr_
                         end
                         H_perturb_1_sorted_full(i_lambda_perturb,j_theta_perturb,:,:) = H_perturb_1_sorted;
                         gammasqr_1_sorted_full(i_lambda_perturb,j_theta_perturb,:) = gammasqr_1;
-                        
+                        %}
                         
                         [eta_R, eta_T, M,...
                             gzero_t,gzero_norm_t,gamma_num_t,gammaminus] =...
