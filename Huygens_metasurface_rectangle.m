@@ -17,7 +17,7 @@ Si_dispersion = xlsread('silicon_cryst_500-1500nm.xlsx');
 
 
 
-Nlambda_eig = 10;
+Nlambda_eig = 15;
 
 
 n_lambda_extra_perturb = 1;
@@ -38,8 +38,8 @@ Nphi_perturb = n_phi_extra_perturb * Nphi_eig;
 half_n_phi = floor((n_phi_extra_perturb-1)/2);
 
 
-lmin = 1300;
-lmax = 1400;
+lmin = 1000;
+lmax = 1500;
 lambda = linspace(lmin,lmax,Nlambda_perturb);
 
 
@@ -85,11 +85,11 @@ eps_Si = 3.5^2;
 %eps_Si = n_Si.^2;
 %%%%%%%%%conditions
 
-figure_shape = 'ellipse';
+figure_shape = 'rectangle';
 dispersion = 'no';
 
-N_intervals_x = 3;
-N_intervals_y = 3;
+N_intervals_x = 2;
+N_intervals_y = 2;
 N_b = 6;
 n_points = 1000;
 %N_basis_x = [4 12 4];
@@ -106,7 +106,7 @@ n1 = n2 = 1
 
 Диапазон от 700 до 1200 нм (50 шагов) и угол от 20 до 80 градусов (60 шагов).
 %}
-
+%{
 R1 = 242;
 R2 = 242;
 P1 = 666;
@@ -127,7 +127,9 @@ x2_t_minus = P2/2-Q2;
 
 b_x1 = [0 x1_t_minus x1_t_plus P1];
 b_x2 = [0 x2_t_minus x2_t_plus P2];
-
+%}
+b_x1 = [0 242*2 666]
+b_x2 = b_x1;
 
 [Nx1, NNxx1] = size(b_x1);
 [Nx2, NNxx2] = size(b_x2);
@@ -144,9 +146,13 @@ refIndices = [n_media n_media];
 L=3; %number of layers
 
 eps_SiO2 = 1.45^2;
+
+epsilon(:,:,1) = [eps_media eps_media; eps_media eps_media]
+epsilon(:,:,2) = [eps_media eps_media; eps_Si eps_media]
+epsilon(:,:,3) = [eps_media eps_media; eps_media eps_media]
 %epsilon(iL,1,iNlambda) = eps outside the ellipse
 %epsilon(iL,2,iNlambda) = eps inside the ellipse
-
+%{
 epsilon = zeros(L,2,Nl);
 
 
@@ -158,14 +164,14 @@ epsilon(2,2) = eps_Si;
 
 epsilon(1,1) = eps_media;
 epsilon(1,2) = eps_media;
-
+%}
 h = zeros(L,1);
 
 
-h(3) = 0.0;
+h(3) = 100.0;
 h(2) = 220.0;
-h(1) = 0.0;
-
+h(1) = 100.0;
+ellipse_parameters=0;
 %{
 refIndices = [n_media real(n_Si)];
 
@@ -226,12 +232,6 @@ N_FMM = 7;
 
 figure(1);
 plot (lambda/1000, Tsum,'r', lambda/1000, angle(Tsum_full),'g')
-%plot (theta*180/pi, Tsum,'r', theta*180/pi, angle(Tsum_full),'g')
-hold off
-
-
-figure(2);
-plot (lambda/1000, Rsum,'b', lambda/1000, angle(Rsum_full),'g')
 %plot (theta*180/pi, Tsum,'r', theta*180/pi, angle(Tsum_full),'g')
 hold off
 

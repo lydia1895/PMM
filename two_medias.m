@@ -17,7 +17,7 @@ Si_dispersion = xlsread('silicon_cryst_500-1500nm.xlsx');
 
 
 
-Nlambda_eig = 10;
+Nlambda_eig = 1;
 
 
 n_lambda_extra_perturb = 1;
@@ -25,7 +25,7 @@ Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
 
 
-Ntheta_eig = 1;
+Ntheta_eig = 10;
 
 
 n_theta_extra_perturb = 1;
@@ -38,13 +38,13 @@ Nphi_perturb = n_phi_extra_perturb * Nphi_eig;
 half_n_phi = floor((n_phi_extra_perturb-1)/2);
 
 
-lmin = 1300;
-lmax = 1400;
+lmin = 1200;
+lmax = 1200;
 lambda = linspace(lmin,lmax,Nlambda_perturb);
 
 
 tmin = 0*pi/180;
-tmax = 0*pi/180;
+tmax = 89*pi/180;
 
 
 theta = linspace(tmin,tmax,Ntheta_perturb);
@@ -59,7 +59,7 @@ eps_Si = zeros(Nl,1);
 
 
 
-n_media = 1.66;
+n_media = 1*ones(Nl,1);
 eps_media = n_media.^2;
 
 n_prism = 2.5*ones(Nl,1);
@@ -78,15 +78,13 @@ for i=1:Nl
 
 end
 
-eps_Si = 3.5^2;
-
-
+eps_Si
 %n_Si = 4*ones(Nl,1);
 %eps_Si = n_Si.^2;
 %%%%%%%%%conditions
 
 figure_shape = 'ellipse';
-dispersion = 'no';
+dispersion = 'yes';
 
 N_intervals_x = 3;
 N_intervals_y = 3;
@@ -107,10 +105,10 @@ n1 = n2 = 1
 Диапазон от 700 до 1200 нм (50 шагов) и угол от 20 до 80 градусов (60 шагов).
 %}
 
-R1 = 242;
-R2 = 242;
-P1 = 666;
-P2 = 666;
+R1 = 290;
+R2 = 290;
+P1 = 600;
+P2 = 600;
 
 
 Q2 = R2/sqrt(2);
@@ -139,7 +137,7 @@ periody = b_x2(NNxx2)-b_x2(1);
 
 delta = 0;
 
-refIndices = [n_media n_media];
+refIndices = [2*n_media n_media];
 
 L=3; %number of layers
 
@@ -150,20 +148,20 @@ eps_SiO2 = 1.45^2;
 epsilon = zeros(L,2,Nl);
 
 
-epsilon(3,1) = eps_media;
-epsilon(3,2) = eps_media;
+epsilon(3,1,:) = 4*eps_media;
+epsilon(3,2,:) = 4*eps_media;
 
-epsilon(2,1) = eps_media;
-epsilon(2,2) = eps_Si;
+epsilon(2,1,:) = 4*eps_media;
+epsilon(2,2,:) = 4*eps_media;
 
-epsilon(1,1) = eps_media;
-epsilon(1,2) = eps_media;
+epsilon(1,1,:) = eps_media;
+epsilon(1,2,:) = eps_media;
 
 h = zeros(L,1);
 
 
 h(3) = 0.0;
-h(2) = 220.0;
+h(2) = 300.0;
 h(1) = 0.0;
 
 %{
@@ -210,7 +208,7 @@ tau_y = exp(1j*beta_ref*periody);
 
 La = 0.5;
 
-N_FMM = 7;
+N_FMM = 4;
 
 
 [Rsum,Tsum,Rsum_full,Tsum_full] = ...
@@ -225,14 +223,8 @@ N_FMM = 7;
 
 
 figure(1);
-plot (lambda/1000, Tsum,'r', lambda/1000, angle(Tsum_full),'g')
-%plot (theta*180/pi, Tsum,'r', theta*180/pi, angle(Tsum_full),'g')
-hold off
-
-
-figure(2);
-plot (lambda/1000, Rsum,'b', lambda/1000, angle(Rsum_full),'g')
-%plot (theta*180/pi, Tsum,'r', theta*180/pi, angle(Tsum_full),'g')
+%plot (lambda/1000, Tsum,'r', lambda/1000, angle(Tsum_full),'g')
+plot (theta*180/pi, Tsum,'r', theta*180/pi, Rsum,'g')
 hold off
 
 %{

@@ -29,7 +29,9 @@ ZX2 = inv_Z*X2;
 %ZX2 = Z\X2;
 
 Tuu_p = ZX1(1:NN,:);
+%Tuu_p = zeros(NN,NN);
 Rud_p = ZX2(1:NN,:);
+%Rdu_p = zeros(NN,NN);
 Rdu_p = Rdu_p1 + Tdd_p1 * ZX1((NN+1):(2*NN),:) ;
 Tdd_p = Tdd_p1 * ZX2((NN+1):(2*NN),:) ;
 
