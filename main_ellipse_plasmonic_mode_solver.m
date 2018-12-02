@@ -127,11 +127,11 @@ La = 0.5;
 N_FMM = 3;
 
 c = 3*10^8;
-w = 332*10^12;
-dw = 0.005*10^12;
+w = (295-106j)*10^12;
+dw = (0.5+0.5j)*10^12;
 
-for ii=1:1
-
+for ii=1:7
+    
     lambda1 = c/w;
     lambda2 = c/(w+dw);
 
@@ -155,13 +155,15 @@ for ii=1:1
 
     dR = (R1-R0)/dw;
     MAXDR = max(dR(:))
-    ddw = dw
+    ddw = dw;
     A=-dR\R0;
     [V, D] = eig(A);
     w_array = diag(D);
 
     dw0 = min(w_array);
     w0 = w + dw0;
+    ii
+    dw0
     %[w0,dw0]= PMM_mode_solver(R0,R1,w,dw);
     dw00(ii) = dw0;
     w = w0;

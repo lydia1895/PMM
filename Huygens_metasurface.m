@@ -210,7 +210,7 @@ tau_y = exp(1j*beta_ref*periody);
 
 La = 0.5;
 
-N_FMM = 7;
+N_FMM = 27;
 
 
 [Rsum,Tsum,Rsum_full,Tsum_full] = ...

@@ -42,7 +42,7 @@ function [Rtotal] = PMM_multi_mode_solver(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef,
     end
     Stotal = Stemp;
     Rtotal = Stotal\eye(4*N_total_3,4*N_total_3);
-    %{
+    
     WR = W;
     WR(:,:,1) = [W(:,2*N_total_3+1:4*N_total_3,1) W(:,1:2*N_total_3,1)];
     WR(:,:,L) = [W(:,2*N_total_3+1:4*N_total_3,L) W(:,1:2*N_total_3,L)];
@@ -54,5 +54,8 @@ function [Rtotal] = PMM_multi_mode_solver(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef,
         Ri = new_recursion(Rtemp, WR(:,:,i), WR(:,:,i+1), pplus(:,:,i), pminus(:,:,i+1));
         Rtemp = Ri;
     end
-    Rtotal = Rtemp;
-    %}
+    Rtotal1 = Rtemp;
+    max1 = max(Rtotal(:))
+    max2 = max(Rtotal1(:))
+    maxx = max(Rtotal(:)-Rtotal1(:))
+    
