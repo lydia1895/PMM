@@ -127,16 +127,22 @@ La = 0.5;
 N_FMM = 3;
 
 c = 3*10^8;
-w = (295-106j)*10^12;
-dw = (0.5+0.5j)*10^12;
+w1 = (295-106j)*10^12;
+%dw = (0.5+0.5j)*10^12;
+%w2 = w1+dw;
+
+lambda1 = c/w1;
+dl = 0.05*10^(-9);
+lambda2 = lambda1 + dl;
+w2 = c/lambda2;
+dw = w2-w1;
+
+lambda = [lambda1 lambda2];
+
 
 for ii=1:7
     
-    lambda1 = c/w;
-    lambda2 = c/(w+dw);
-
-    lambda = [lambda1 lambda2]
-
+    
     for i=1:Nl
         num = floor(real(lambda(i)*10^9)) - 500 + 1;
         nAu(i) = lamnkAu(num,2) + 1j*lamnkAu(num,3);
@@ -154,19 +160,22 @@ for ii=1:7
         Nphi_eig,    Nphi_perturb,    half_n_phi,    n_phi_extra_perturb);
 
     dR = (R1-R0)/dw;
-    MAXDR = max(dR(:))
-    ddw = dw;
+    MAXDR(ii) = max(dR(:));
+            
     A=-dR\R0;
     [V, D] = eig(A);
+            
     w_array = diag(D);
-
     dw0 = min(w_array);
-    w0 = w + dw0;
-    ii
-    dw0
-    %[w0,dw0]= PMM_mode_solver(R0,R1,w,dw);
+            
+    w1 = w1 + dw0;
+    w2 = w1 + dw;
+            
+    l1 = c/w1;
+    l2 = c/w2;
+    lambda = [l1 l2];
+            
     dw00(ii) = dw0;
-    w = w0;
 end
 %{
 figure(1)
