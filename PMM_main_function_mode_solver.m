@@ -1,6 +1,6 @@
 
-function [Rsum,Tsum,Rsum_full,Tsum_full] =...
-        PMM_main_function(figure_shape, dispersion, lambda_full, theta_full, phi_full, delta,...
+function [R0,R1] =...
+        PMM_main_function_mode_solver(figure_shape, dispersion, lambda_full, theta_full, phi_full, delta,...
         h, L, N_FMM, epsilon, refIndices, La, tau_x, tau_y, alpha_ref, beta_ref,...
         b_x, b_y, N_basis_x, N_basis_y, N_intervals_x, N_intervals_y, ellipse_parameters,...
         n_points, eta, f1, verbose,...
@@ -197,8 +197,8 @@ function [Rsum,Tsum,Rsum_full,Tsum_full] =...
                 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%wave vector and E0 we calculate for different
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%lambda and theta and phi
-                lambda = lambda_full(i_lambda_perturb)
-                theta = theta_full(j_theta_perturb)
+                lambda = lambda_full(i_lambda_perturb);
+                theta = theta_full(j_theta_perturb);
                 phi = phi_full(k_phi_perturb);
                 [alpha0,beta0,gamma0,k0,Ex0,Ey0] =...
                     PMM_incident_wave_vector_and_field(lambda,theta,phi,delta,n1);
@@ -232,37 +232,24 @@ function [Rsum,Tsum,Rsum_full,Tsum_full] =...
                     Lfull_eig(:,:,nlayer) = L_HE_eig(:,:,nlayer)*L_EH_eig(:,:,nlayer);
                     
                     [H_eig(:,:,nlayer),gammasqr_eig(:,:,nlayer)] = PMM_eig_for_Maxwell(Lfull_eig(:,:,nlayer));
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%test!
-                    %{
-                    gammasqr_1 = diag(gammasqr_eig(:,:,current_layer));
-                    H_perturb_1 = H_eig(:,:,current_layer);
-                    [gammasqr_1_sorted, index] = sort(gammasqr_1);
-                    H_perturb_1_sorted = zeros(2*N_total_3,2*N_total_3);
-                    for i=1:2*N_total_3
-                        H_perturb_1_sorted(:,i) = H_perturb(:,index(i),1);
-                    end
-                    H_perturb_1_sorted_full(i_lambda_perturb,j_theta_perturb,:,:) = H_perturb_1_sorted;
-                    gammasqr_1_sorted_full(i_lambda_perturb,j_theta_perturb,:) = gammasqr_1;
-                    %}
+                    
                 end
-                %M_eig_Au_layer(i_lambda_eig,j_theta_eig,:,:) = Lfull_eig(:,:,2);
-                
-                
-                
+                             
+                              
                 %%%%%%%%%%%%%here we start perturbation calculation
                 i_current = 1209;
                 for i_perturb = -half_n_lambda:half_n_lambda
                     for j_perturb = -half_n_theta:half_n_theta
                         title = 'perturbations'
-                        jj=j_perturb
+                        jj=j_perturb;
                         i_lambda_perturb = half_n_lambda + 1 + i_perturb +...
-                            (i_lambda_eig-1)*n_lambda_extra_perturb
-                        lambda = lambda_full(i_lambda_perturb)
+                            (i_lambda_eig-1)*n_lambda_extra_perturb;
+                        lambda = lambda_full(i_lambda_perturb);
                         
                         j_theta_perturb = half_n_theta + 1 + j_perturb +...
-                            (j_theta_eig-1)*n_theta_extra_perturb
+                            (j_theta_eig-1)*n_theta_extra_perturb;
                         %j_theta_perturb = j_theta_eig
-                        theta = theta_full(j_theta_perturb)
+                        theta = theta_full(j_theta_perturb);
                         
                         phi = phi_full(k_phi_perturb);
                         
@@ -278,7 +265,7 @@ function [Rsum,Tsum,Rsum_full,Tsum_full] =...
                         if strcmp (dispersion,'no')==1
                             rrefIndices = refIndices;
                         else
-                            rrefIndices = refIndices_lambda
+                            rrefIndices = refIndices_lambda;
                         end
                         
                         [alpha0,beta0,gamma0,k0,Ex0,Ey0] =...
@@ -313,7 +300,7 @@ function [Rsum,Tsum,Rsum_full,Tsum_full] =...
                                         N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
                                         Dx, Dy, hx, hy, eps_total(:,:,:,nlayer), mu_total(:,:,:,nlayer));
                                 end
-                                nnlayer = nlayer
+                                nnlayer = nlayer;
                                 
                                 
                                 Lfull_perturb = L_HE_perturb*L_EH_perturb(:,:,nlayer);
@@ -324,34 +311,20 @@ function [Rsum,Tsum,Rsum_full,Tsum_full] =...
                                 
                             end
                         end
-                        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%test
-                        %{
-                        gammasqr_1 = diag(gammasqr_perturb(:,:,current_layer));
-                        H_perturb_1 = H_perturb(:,:,current_layer);
-                        [gammasqr_1_sorted, index] = sort(gammasqr_1);
-                        H_perturb_1_sorted = zeros(2*N_total_3,2*N_total_3);
-                        for i=1:2*N_total_3
-                            H_perturb_1_sorted(:,i) = H_perturb_1(:,index(i),1);
-                        end
-                        H_perturb_1_sorted_full(i_lambda_perturb,j_theta_perturb,:,:) = H_perturb_1_sorted;
-                        gammasqr_1_sorted_full(i_lambda_perturb,j_theta_perturb,:) = gammasqr_1;
-                        %}
+                       
                         
-                        [eta_R, eta_T, eta_R_full, eta_T_full,...
-                            gzero_t,gzero_norm_t,gamma_num_t,gammaminus] =...
-                            PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef,...
+                        [R] = PMM_multi_mode_solver(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef,...
                             Ex0, Ey0, alpha0,beta0,gamma0,k0, N_FMM, h, L, rrefIndices,...
                             b_x1, b_x2, N_intervals_x, N_intervals_y, N_basis_x, N_basis_y,...
                             verbose, H_perturb, gammasqr_perturb, L_EH_perturb);
+                        if i_lambda_perturb == 1
+                            i_lambda_perturb
+                            R0 = R;
+                        else
+                            i_lambda_perturb
+                            R1 = R;
+                        end
                         
-                        Rsum(i_lambda_perturb,j_theta_perturb) = sum(eta_R);
-                        Tsum(i_lambda_perturb,j_theta_perturb) = sum(eta_T);
-                        Rsum_full(i_lambda_perturb,j_theta_perturb) = sum(eta_R_full);
-                        Tsum_full(i_lambda_perturb,j_theta_perturb) = sum(eta_T_full);
-                        gzero(i_lambda_perturb,j_theta_perturb) = gzero_t;
-                        gzero_norm(i_lambda_perturb,j_theta_perturb) = gzero_norm_t;
-                        gamma00(j_theta_perturb)=gamma0;
-                        gamma_num(i_lambda_perturb,j_theta_perturb)=gamma_num_t;
                     end
                 end
             end

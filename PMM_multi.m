@@ -1,4 +1,4 @@
-function [eta_R, eta_T, M,...
+function [eta_R, eta_T, eta_R_full, eta_T_full,...
         gzero,gzero_norm, gamma_num,gammaminus] =...
         PMM_multi(int_P1_Q1,int_P1_Q2, fx_coef, fy_coef,...
         Ex0, Ey0, alpha0,beta0,gamma0,k0, N_FMM, h, L, refIndices,...
@@ -32,6 +32,7 @@ function [eta_R, eta_T, M,...
             pminus(:,:,nlayer) = pminust;
     end
     
+    gammaminus(:,2)
     
     %S-matrix propagation
     
@@ -79,10 +80,11 @@ function [eta_R, eta_T, M,...
     dlast = zeros(2*N_total_3,1);
     dlast(q01) = dq(1);
     dlast(q02) = dq(2);
-    delta_inc = cat(1,u0_1,u0_2,dlast);
-    delta_max = max(delta_inc);
-    
-    ud_PMM = Stotal*delta_inc;
+    %delta_inc = cat(1,u0_1,u0_2,dlast);
+    %delta_max = max(delta_inc);
+    %Stotal1 = Stotal/norm(Stotal);
+    ud_PMM = Stotal(:,2*N_total_3+1:4*N_total_3)*dlast;
+    %ud_PMM = Stotal*delta_inc;
     %ud_PMM_1=max(ud_PMM);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
@@ -146,40 +148,95 @@ function [eta_R, eta_T, M,...
     u2_PMM = ud_PMM(1:2*N_total_3);
     d0_PMM = ud_PMM(2*N_total_3+1:4*N_total_3);
     
+    %W(:,:,1)=W(:,:,1)/norm(W(:,:,1));
+    
     u2_1_FMM = fx_coef*W(1:N_total_3, 1:2*N_total_3, L)*u2_PMM;
     u2_2_FMM = fy_coef*W(N_total_3+1:2*N_total_3, 1:2*N_total_3, L)*u2_PMM;
     d0_1_FMM = fx_coef*W(1:N_total_3, 2*N_total_3+1:4*N_total_3, 1)*d0_PMM;
     d0_2_FMM = fy_coef*W(N_total_3+1:2*N_total_3, 2*N_total_3+1:4*N_total_3, 1)*d0_PMM;
     
+    %%%%%%%%%%%%%%%%%%
+    %{
+    hID = 200;
+    ID_minus = zeros(NN,2*N_total_3,2*N_total_3);
+    for q = 1:2*N_total_3
+        ID_minus(m,q,q) = (exp(-1j*hID*(gammaminus(q,1)+kz2v(m)))-1)/(1j*(gammaminus(q,1)+kz2v(m)));
+    end
+    for m=1:NN
+        IDm(:,:)=ID_minus(m,:,:);
+        d0_1_FMM(m) = fx_coef(m,:)*W(1:N_total_3, 2*N_total_3+1:4*N_total_3, 1)*IDm*d0_PMM;
+        d0_2_FMM(m) = fy_coef(m,:)*W(N_total_3+1:2*N_total_3, 2*N_total_3+1:4*N_total_3, 1)*IDm*d0_PMM;
+    end
+    %}
+    %%%%%%%%%%%%%%%%%%
+    %{
+    Dplus = zeros(2*N_total_3,2*N_total_3);
+    Dminus = zeros(2*N_total_3,2*N_total_3);
+    for q=1:2*N_total_3
+        Dplus(q,q)= exp(-1j*gammaminus(q,L)*sum(h));
+        Dminus(q,q) = exp(1j*gammaminus(q,1)*(h(1)-h(2)));
+    end
+    u2_1_FMM = fx_coef*W(1:N_total_3, 1:2*N_total_3, L)*Dplus*u2_PMM;
+    u2_2_FMM = fy_coef*W(N_total_3+1:2*N_total_3, 1:2*N_total_3, L)*Dplus*u2_PMM;
+    d0_1_FMM = fx_coef*W(1:N_total_3, 2*N_total_3+1:4*N_total_3, 1)*Dminus*d0_PMM;
+    d0_2_FMM = fy_coef*W(N_total_3+1:2*N_total_3, 2*N_total_3+1:4*N_total_3, 1)*Dminus*d0_PMM;
+    %}
     R1 = zeros(NN,1);
     R2 = zeros(NN,1);
     T1 = d0_1_FMM;
     T2 = d0_2_FMM;
-    
+    %{
+    for i=1:NN
+        R1(i) = u2_1_FMM(i)/exp(1j*kz1v(i)*sum(h));
+        R2(i) = u2_2_FMM(i)/exp(1j*kz1v(i)*sum(h));
+    end
+    %}
     for i=1:NN
         R1(i) = u2_1_FMM(i)/exp(1j*kz1v(i)*(sum(h)-h(L-1)));
         R2(i) = u2_2_FMM(i)/exp(1j*kz1v(i)*(sum(h)-h(L-1)));
     end
     
+    
+    %%%%%%%%%%%%%%%%%%
     u2d0_FMM=cat(2,R1,R2,T1,T2);
     
     eta_R = zeros(NN,1);
     eta_T = zeros(NN,1);
+    %eta_T_1 = zeros(NN,1);
+    %eta_T_2 = zeros(NN,1);
+    %eta_T_3 = zeros(NN,1);
+    eta_R_full = zeros(NN,1);
+    eta_T_full = zeros(NN,1);
     
-    for i=1:NN
-        if imag(kz1v(i))==0
-            eta_R(i) = A1(i,i)*(abs(R2(i)))^2 + B1(i,i)*(abs(R1(i)))^2 +...
-                C1(i,i)*( R1(i)*conj(R2(i))+R2(i)*conj(R1(i)) );
-        end
-        if imag(kz2v(i))==0
-            eta_T(i) = A2(i,i)*(abs(T2(i)))^2 + B2(i,i)*(abs(T1(i)))^2 +...
-                C2(i,i)*( T1(i)*conj(T2(i))+T2(i)*conj(T1(i)) );
-            B2(i,i)*(abs(T1(i)))^2
-            B2(i,i)
-            (abs(T1(i)))^2
-        end
+   for i=1:NN
+    if imag(kz1v(i))==0
+    eta_R(i) = A1(i,i)*(abs(R2(i)))^2 + B1(i,i)*(abs(R1(i)))^2 + C1(i,i)*( R1(i)*conj(R2(i))+R2(i)*conj(R1(i)) );
     end
+    if imag(kz2v(i))==0
+    eta_T(i) = A2(i,i)*(abs(T2(i)))^2 + B2(i,i)*(abs(T1(i)))^2 + C2(i,i)*( T1(i)*conj(T2(i))+T2(i)*conj(T1(i)) );
+    B2(i,i)
+    (abs(T1(i)))^2
+    end
+end
+for i=1:NN
     
+    eta_R_full(i) = A1(i,i)*(abs(R2(i)))^2 + B1(i,i)*(abs(R1(i)))^2 +...
+        C1(i,i)*( R1(i)*conj(R2(i))+R2(i)*conj(R1(i)) );
+    eta_T_full(i) = A2(i,i)*(abs(T2(i)))^2 + B2(i,i)*(abs(T1(i)))^2 +...
+        C2(i,i)*( T1(i)*conj(T2(i))+T2(i)*conj(T1(i)) );
+    
+end
+    %{
+    figure(1)
+    bar(number,eta_T_1,'r');
+    hold off
+    figure(3) %!!!!!!!!!!!!!
+    bar(number,eta_T_2,'g');
+    hold off
+    figure(4)
+    bar(number,eta_T_3,'b');
+    hold off;
+    %}
     %{
 title = 'plot R1'
 [x_full] = PMM_graph_output(ud_FMM, ud_PMM, La, alpha0, beta0, alpha_ref, beta_ref,...

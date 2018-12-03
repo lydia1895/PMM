@@ -17,7 +17,7 @@ Si_dispersion = xlsread('silicon_cryst_500-1500nm.xlsx');
 
 
 
-Nlambda_eig = 10;
+Nlambda_eig = 1;
 
 
 n_lambda_extra_perturb = 1;
@@ -25,7 +25,7 @@ Nlambda_perturb = n_lambda_extra_perturb * Nlambda_eig;
 half_n_lambda = floor((n_lambda_extra_perturb-1)/2);
 
 
-Ntheta_eig = 1;
+Ntheta_eig = 10;
 
 
 n_theta_extra_perturb = 1;
@@ -38,13 +38,13 @@ Nphi_perturb = n_phi_extra_perturb * Nphi_eig;
 half_n_phi = floor((n_phi_extra_perturb-1)/2);
 
 
-lmin = 1300;
-lmax = 1400;
+lmin = 1200;
+lmax = 1200;
 lambda = linspace(lmin,lmax,Nlambda_perturb);
 
 
 tmin = 0*pi/180;
-tmax = 0*pi/180;
+tmax = 89*pi/180;
 
 
 theta = linspace(tmin,tmax,Ntheta_perturb);
@@ -54,29 +54,21 @@ phi = 0*pi/180;
 
 
 Nl = Nlambda_perturb;
-%n_Si = zeros(Nl,1);
-%eps_Si = zeros(Nl,1);
-
-<<<<<<< HEAD
-n_media = 1.66%*ones(Nl,1);
-eps_media = n_media^2;
-
-%n_prism = 3.5%*ones(Nl,1);
-%eps_prism = n_prism^2;
-=======
+n_Si = zeros(Nl,1);
+eps_Si = zeros(Nl,1);
 
 
-n_media = 1.66;
+
+n_media = 1*ones(Nl,1);
 eps_media = n_media.^2;
 
 n_prism = 2.5*ones(Nl,1);
 
 
 eps_prism = n_prism.^2;
->>>>>>> c3605517acbb0dcaebc5d592538a5e6f0af1b04e
 
 Si_lambda = Si_dispersion(:,1)*1000;
-%{
+
 for i=1:Nl
     [ll,num] = min( abs (lambda(i)-Si_lambda(:) ) );
 
@@ -85,37 +77,21 @@ for i=1:Nl
     eps_Si(i) = Si_dispersion(num,5) + 1j*Si_dispersion(num,6);
 
 end
-<<<<<<< HEAD
-%}
-n_Si = 4.32%Si_dispersion(2,2);
-eps_Si = n_Si^2;
-=======
 
-eps_Si = 3.5^2;
-
-
->>>>>>> 35bba7939d0641f41e82f93f9f7f621ed5b49ebd
+eps_Si
 %n_Si = 4*ones(Nl,1);
 %eps_Si = n_Si.^2;
 %%%%%%%%%conditions
 
 figure_shape = 'ellipse';
-<<<<<<< HEAD
-dispersion = 'no';%'yes';
-=======
-dispersion = 'no';
->>>>>>> 35bba7939d0641f41e82f93f9f7f621ed5b49ebd
+dispersion = 'yes';
 
 N_intervals_x = 3;
 N_intervals_y = 3;
 N_b = 6;
-<<<<<<< HEAD
-n_points = 500;
-=======
 n_points = 1000;
 %N_basis_x = [4 12 4];
 %N_basis_y = N_basis_x;
->>>>>>> 35bba7939d0641f41e82f93f9f7f621ed5b49ebd
 N_basis_x = N_b*ones(N_intervals_x,1);
 N_basis_y = N_b*ones(N_intervals_y,1);
 
@@ -129,19 +105,12 @@ n1 = n2 = 1
 Диапазон от 700 до 1200 нм (50 шагов) и угол от 20 до 80 градусов (60 шагов).
 %}
 
-R1 = 242;
-R2 = 242;
-P1 = 666;
-P2 = 666;
+R1 = 290;
+R2 = 290;
+P1 = 600;
+P2 = 600;
 
 
-<<<<<<< HEAD
-R1 = 242;
-R2 = 242;
-P1 = 666;
-P2 = 666;
-=======
->>>>>>> c3605517acbb0dcaebc5d592538a5e6f0af1b04e
 Q2 = R2/sqrt(2);
 Q1 = (R1/R2)*sqrt(R2^2-Q2^2);
 
@@ -168,7 +137,7 @@ periody = b_x2(NNxx2)-b_x2(1);
 
 delta = 0;
 
-refIndices = [n_media n_media];
+refIndices = [2*n_media n_media];
 
 L=3; %number of layers
 
@@ -179,20 +148,20 @@ eps_SiO2 = 1.45^2;
 epsilon = zeros(L,2,Nl);
 
 
-epsilon(3,1) = eps_media;
-epsilon(3,2) = eps_media;
+epsilon(3,1,:) = 4*eps_media;
+epsilon(3,2,:) = 4*eps_media;
 
-epsilon(2,1) = eps_media;
-epsilon(2,2) = eps_Si;
+epsilon(2,1,:) = 4*eps_media;
+epsilon(2,2,:) = 4*eps_media;
 
-epsilon(1,1) = eps_media;
-epsilon(1,2) = eps_media;
+epsilon(1,1,:) = eps_media;
+epsilon(1,2,:) = eps_media;
 
 h = zeros(L,1);
 
 
 h(3) = 0.0;
-h(2) = 220.0;
+h(2) = 300.0;
 h(1) = 0.0;
 
 %{
@@ -204,7 +173,7 @@ eps_SiO2 = 1.45^2;
 %epsilon(iL,1,iNlambda) = eps outside the ellipse
 %epsilon(iL,2,iNlambda) = eps inside the ellipse
 
-epsilon = zeros(L,2)%,Nl);
+epsilon = zeros(L,2,Nl);
 
 %epsilon(4,1,:) = eps_prism;
 %epsilon(4,2,:) = eps_prism;
@@ -239,7 +208,7 @@ tau_y = exp(1j*beta_ref*periody);
 
 La = 0.5;
 
-N_FMM = 27;
+N_FMM = 4;
 
 
 [Rsum,Tsum,Rsum_full,Tsum_full] = ...
@@ -254,14 +223,8 @@ N_FMM = 27;
 
 
 figure(1);
-plot (lambda/1000, Tsum,'r', lambda/1000, angle(Tsum_full),'g')
-%plot (theta*180/pi, Tsum,'r', theta*180/pi, angle(Tsum_full),'g')
-hold off
-
-
-figure(2);
-plot (lambda/1000, Rsum,'b', lambda/1000, angle(Rsum_full),'g')
-%plot (theta*180/pi, Tsum,'r', theta*180/pi, angle(Tsum_full),'g')
+%plot (lambda/1000, Tsum,'r', lambda/1000, angle(Tsum_full),'g')
+plot (theta*180/pi, Tsum,'r', theta*180/pi, Rsum,'g')
 hold off
 
 %{
